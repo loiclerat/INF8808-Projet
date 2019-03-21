@@ -1,18 +1,19 @@
-export default class Incident {
-    public constructor(
-        private cityOrCountry: string,
-        private date: Date,
-        private characteristics: string[],
-        private latitude: number,
-        private longitude: number,
-        private injured: number,
-        private killed: number,
-        private gender: Gender[],
-        private state: string,
-        private stateHouseDistrict: number
-    ) {}
+export interface IncidentJson {
+  city_or_country: string;
+  date: string;
+  latitude: string;
+  longitude: string;
+  state: string;
+  state_house_district: string;
 }
 
-export enum Gender {
-    Male, Female
+export class Incident {
+  constructor(
+    public city_or_country: string,
+    public date: Date,
+    public latitude: number,
+    public longitude: number,
+    public state: string,
+    public state_house_district: number
+  ) {}
 }
