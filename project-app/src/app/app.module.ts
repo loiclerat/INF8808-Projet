@@ -2,10 +2,10 @@ import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
 
 import { AppComponent } from "./app.component";
-import { SquareMatrixPlotComponent } from "./visualizations/square-matrix-plots/square-matrix-plots.component";
+import { LineChartComponent } from "./visualizations/line-chart/line-chart.component";
 
 @NgModule({
-  declarations: [AppComponent, SquareMatrixPlotComponent],
+  declarations: [AppComponent, LineChartComponent],
   imports: [BrowserModule],
   providers: [],
   bootstrap: [AppComponent]
