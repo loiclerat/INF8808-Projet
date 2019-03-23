@@ -18,7 +18,7 @@ with open(file_name, 'r') as csvFile:
         size = len(row)
         can_add = True
         for i in range(0, size):
-            if row[i] is None or str(row[i]) == "":
+            if row[i] is None or str(row[i]) == "" or "2018" in str(row[i]) or "2013" in str(row[i]):
                 can_add = False
 
         if can_add:
