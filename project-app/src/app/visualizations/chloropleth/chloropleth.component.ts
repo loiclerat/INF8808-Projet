@@ -30,13 +30,12 @@ export class ChloroplethComponent implements OnInit {
 
     this.path = d3.geoPath();
     this.us = await d3.json("https://d3js.org/us-10m.v1.json");
-    this.svg.append("g").attr("class", "states");
-
-    if (this.type === "counties") {
-      this.buildForCounties();
-    } else {
-      this.buildForStates();
+    for (let i = 0; i < this.us.objects.states.length; i++) {
+      const element = this.us.features[i];
+      console.log(element)
     }
+    this.svg.append("g").attr("class", "states");
+    this.buildForStates();
   }
 
   buildForCounties() {
@@ -51,10 +50,21 @@ export class ChloroplethComponent implements OnInit {
       .data(topoJson.feature(this.us, this.us.objects.counties).features)
       .enter()
       .append("path")
-      .attr("d", this.path);
+      .attr("d", this.path)
+      .style("fill", function (d) {
+          return '#FF0000';
+      });
   }
 
   buildForStates() {
+    var states = (topoJson.feature(this.us, this.us.objects.states).features;
+    states.forEach(state => {
+      var stateId = state.id
+      console.log(stateId)
+      state.properties = {
+        "value" : 5
+      }
+    });
     this.svg.remove();
     this.svg = d3
       .select("body")
@@ -63,10 +73,14 @@ export class ChloroplethComponent implements OnInit {
       .attr("height", this.height);
     this.svg
       .selectAll("path")
-      .data(topoJson.feature(this.us, this.us.objects.states).features)
+      .data(states)
       .enter()
       .append("path")
-      .attr("d", this.path);
+      .attr("d", this.path)
+      .style("fill", function (d) {
+          console.log(d)
+          return '#FF0000';
+      });
   }
 
   change() {
