@@ -11,6 +11,7 @@ import { DataByState } from "../../data-by-state.model";
 })
 export class LineChartComponent implements OnInit {
   private dataByState: DataByState[];
+  private readonly NUMBER_OF_MONTHS = 48;
 
   ngOnInit() {
     d3.json("../../data-by-state.json").then((data: DataByState[]) => {
@@ -23,20 +24,26 @@ export class LineChartComponent implements OnInit {
   // Début mais pas fini
   private initialization() {
     const marginFocus = {
-      top: 10,
+      top: 30,
       right: 10,
       bottom: 100,
       left: 60
     };
-    const widthFocus = 1200 - marginFocus.left - marginFocus.right;
+    const widthFocus = 1000 - marginFocus.left - marginFocus.right;
     const heightFocus = 500 - marginFocus.top - marginFocus.bottom;
 
-    const xFocus = d3.scaleTime().range([0, widthFocus]);
+    const xFocus = d3.scaleLinear().range([0, widthFocus]);
     const yFocus = d3.scaleLinear().range([heightFocus, 0]);
+
+    const tickValues = [];
+    for (let i = 0; i < this.NUMBER_OF_MONTHS / 4; i++) {
+      tickValues.push(i * 4);
+    }
 
     const xAxisFocus = d3
       .axisBottom(xFocus)
-      .tickFormat((d: Date) => Localization.getFormattedDateByMonth(d));
+      .tickFormat((d: number) => Localization.getFormattedDateByMonth(d))
+      .tickValues(tickValues);
     const yAxisFocus = d3.axisLeft(yFocus);
 
     const svg = d3
@@ -74,17 +81,14 @@ export class LineChartComponent implements OnInit {
   }
 
   private createLine(
-    x: d3.ScaleTime<number, number>,
+    x: d3.ScaleLinear<number, number>,
     y: d3.ScaleLinear<number, number>
   ) {
-    console.log("creating line");
-    return (
-      d3
-        .line()
-        .x((d, i) => x(i))
-        // .y(d => y(d))
-        .curve(d3.curveBasisOpen)
-    );
+    return d3
+      .line()
+      .x((d, i) => x(i))
+      .y((d: any) => y(d))
+      .curve(d3.curveBasisOpen);
   }
 
   private domainColor(color: d3.ScaleOrdinal<string, string>) {
@@ -92,8 +96,8 @@ export class LineChartComponent implements OnInit {
     color.domain(states);
   }
 
-  private domainX(xFocus: d3.ScaleTime<number, number>) {
-    xFocus.domain([new Date(2014, 1), new Date(2017, 12)]);
+  private domainX(xFocus: d3.ScaleLinear<number, number>) {
+    xFocus.domain([0, this.NUMBER_OF_MONTHS - 1]);
   }
 
   private domainY(yFocus: d3.ScaleLinear<number, number>) {
