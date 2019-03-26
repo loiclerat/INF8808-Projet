@@ -3,7 +3,7 @@ import { NgModule } from "@angular/core";
 
 import { AppComponent } from "./app.component";
 import { LineChartComponent } from "./visualizations/line-chart/line-chart.component";
-import { ChloroplethComponent } from './visualizations/chloropleth/chloropleth.component';
+import { ChloroplethComponent } from "./visualizations/chloropleth/chloropleth.component";
 
 @NgModule({
   declarations: [AppComponent, LineChartComponent, ChloroplethComponent],
