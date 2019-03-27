@@ -1,0 +1,42 @@
+body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
+    
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.slope-line {
+    stroke: #333;
+    stroke-width: 2px;
+    stroke-linecap: round;
+}
+
+.slope-label-left, .slope-label-right {
+    font-size: 16px;
+    cursor: default;
+    font-weight: 400;
+}
+
+.label-figure {
+    font-weight: 700;
+    }
+
+.border-lines {
+    stroke: #999;
+    stroke-width: 1px;
+}
+
+.voronoi path {
+    fill: none;
+    pointer-events: all;
+}
+
+circle {
+    fill: white;
+    stroke: black;
+    stroke-width: 2px;
+}
