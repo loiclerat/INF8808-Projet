@@ -1,5 +1,5 @@
 export interface IncidentJson {
-  city_or_country: string;
+  city_or_county: string;
   date: string;
   latitude: string;
   longitude: string;
@@ -9,7 +9,7 @@ export interface IncidentJson {
 
 export class Incident {
   constructor(
-    public city_or_country: string,
+    public city_or_county: string,
     public date: Date,
     public latitude: number,
     public longitude: number,

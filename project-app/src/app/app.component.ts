@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
         if (date.getFullYear() > 2013 && date.getFullYear() < 2018) {
           this.data.push(
             new Incident(
-              incident.city_or_country,
+              incident.city_or_county,
               parseTime(incident.date),
               parseFloat(incident.latitude),
               parseFloat(incident.longitude),
