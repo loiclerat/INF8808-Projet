@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import * as d3 from "d3";
 
 import { Incident, IncidentJson } from "./incident.model";
+import { City, CityJson } from "./city.model";
 
 @Component({
   selector: "app-root",
@@ -10,6 +11,7 @@ import { Incident, IncidentJson } from "./incident.model";
 })
 export class AppComponent implements OnInit {
   public data: Incident[];
+  public citiesData: City[];
 
   ngOnInit() {
     const parseTime = d3.timeParse("%Y-%m-%d");
@@ -32,6 +34,14 @@ export class AppComponent implements OnInit {
             )
           );
         }
+      });
+    });
+
+
+    d3.json("../../citypop.json").then((data: CityJson[]) => {
+      this.citiesData = [];
+      data.forEach(city => { 
+        this.citiesData.push(new City(city.city, city.state, city.pop)); 
       });
     });
   }

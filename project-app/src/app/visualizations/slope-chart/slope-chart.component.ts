@@ -2,12 +2,15 @@ import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
 import * as d3 from "d3";
 
 import { Incident } from "src/app/incident.model";
-import { Localization } from "../localization-fr";
+import { City } from "src/app/city.model";
 
-class DataByState {
+class DataByCity {
   constructor(
-    public name: string,
-    public incidentsByMonth: number[]
+    public cityName: string,
+    // TODO : do we really need this one ?
+    public stateName: string,
+    public incidentRatio2014: number,
+    public incidentRatio2017: number
   ) {}
 }
 
@@ -18,7 +21,9 @@ class DataByState {
 })
 export class SlopeChartComponent implements OnChanges {
   @Input() public data: Incident[];
-  private dataByState: DataByState[];
+  @Input() public citiesData: City[];
+
+  private dataByCity: DataByCity[];
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.data && changes.data.currentValue) {
@@ -32,7 +37,10 @@ export class SlopeChartComponent implements OnChanges {
   private preprocessing() {
 
     // Extract data only 2014 and 2017
+    // Restreindre aux ville dispo dans citypop
     // Extract 100 first and 100 last cities (nb incident / nb hab)
+
+
   }
 
   // Début mais pas fini
