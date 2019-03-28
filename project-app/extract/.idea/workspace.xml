@@ -3,10 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9a9f061f-e245-4bf7-a455-059ae28b1cf6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/app/app.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../src/app/app.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/app/visualizations/chloropleth/chloropleth.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../src/app/visualizations/chloropleth/chloropleth.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/app/visualizations/chloropleth/chloropleth.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../src/app/visualizations/chloropleth/chloropleth.component.ts" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -53,11 +49,12 @@
     <session id="521202590">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.opened" value="3" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -77,8 +74,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="20" column="83" selection-start-line="20" selection-start-column="83" selection-end-line="20" selection-end-column="83" />
+            <state relative-caret-position="374">
+              <caret line="22" selection-start-line="22" selection-end-line="22" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -88,7 +85,11 @@
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gun-violence-data_01-2013_03-2018.csv">
-          <provider selected="true" editor-type-id="csv-text-editor" />
+          <provider selected="true" editor-type-id="csv-text-editor">
+            <state relative-caret-position="17">
+              <caret line="1" column="23" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="23" />
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
@@ -241,8 +242,8 @@
     <entry file="file://$PROJECT_DIR$/data.json" />
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="83" selection-start-line="20" selection-start-column="83" selection-end-line="20" selection-end-column="83" />
+        <state relative-caret-position="374">
+          <caret line="22" selection-start-line="22" selection-end-line="22" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
@@ -250,8 +251,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/gun-violence-data_01-2013_03-2018.csv">
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="23" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="23" />
+        </state>
+      </provider>
       <provider editor-type-id="LargeFileEditor" />
-      <provider selected="true" editor-type-id="csv-text-editor" />
     </entry>
   </component>
 </project>
