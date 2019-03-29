@@ -34,7 +34,7 @@ export class LineChartComponent implements OnInit {
     const yScale = d3.scaleLinear().range([height, 0]);
 
     const tickValues = [];
-    for (let i = 0; i < this.NUMBER_OF_MONTHS / 4; i++) {
+    for (let i = 0; i < this.NUMBER_OF_MONTHS / 4; ++i) {
       tickValues.push(i * 4);
     }
 
@@ -52,7 +52,7 @@ export class LineChartComponent implements OnInit {
 
     const line = this.createLine(xScale, yScale);
 
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    const color: any = d3.scaleOrdinal().range(this.colorGenerator(50));
     this.domainColor(color);
 
     this.domainX(xScale);
@@ -154,5 +154,23 @@ export class LineChartComponent implements OnInit {
 
   private mouseout() {
     d3.select("#tooltip").style("display", "none");
+  }
+
+  private colorGenerator(length: number): d3.HSLColorFactory[] {
+    const base = 5;
+    const lightnessMin = 0.4;
+    const lightnessMax = 0.8;
+    const lightnessDecay = 100;
+
+    const colors = [];
+    for (let i = 0; i < length; ++i) {
+      const tmp = i.toString(base).split("").reverse().join("");
+      const hue = 360 * parseInt(tmp, base) / Math.pow(base, tmp.length);
+      const lightness = lightnessMin + (lightnessMax - lightnessMin) * (1 - Math.exp(-i / lightnessDecay));
+
+      colors.push(d3.hsl(hue, 1, lightness));
+    }
+
+    return colors;
   }
 }
