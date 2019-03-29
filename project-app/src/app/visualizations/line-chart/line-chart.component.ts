@@ -78,6 +78,23 @@ export class LineChartComponent implements OnInit {
       .append("g")
       .attr("class", "y axis")
       .call(yAxisFocus);
+
+    focus
+      .append("text")
+      .attr("fill", "currentColor")
+      .attr("text-anchor", "end")
+      .attr("x", widthFocus)
+      .attr("y", heightFocus + 40)
+      .text("Temps");
+
+    focus
+      .append("text")
+      .attr("fill", "currentColor")
+      .attr("text-anchor", "end")
+      .attr("y", -55)
+      .attr("dy", ".75em")
+      .attr("transform", "rotate(-90)")
+      .text("Nombre d'incidents");
   }
 
   private createLine(
