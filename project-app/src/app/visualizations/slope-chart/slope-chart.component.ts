@@ -13,34 +13,64 @@ class DataByCity {
     public incidentNumber2014: number,
     public incidentNumber2017: number,
     public incidentRatio2014: number,
-    public incidentRatio2017: number
-  ) {}
-}
-
-
-@Component({
-  selector: "app-slope-chart",
-  templateUrl: "./slope-chart.component.html",
-  styleUrls: ["./slope-chart.component.css"]
-})
-export class SlopeChartComponent implements OnChanges {
-  @Input() public data: Incident[];
-  @Input() public citiesPopulationData: City[];
-
-  private dataByCityManyIncidents: DataByCity[];
-  private dataByCityFewIncidents: DataByCity[];
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.data && changes.data.currentValue) {
-      this.preprocessing();
-      this.initialization();
-    }
+    public incidentRatio2017: number,
+    public yLeftPosition: number,
+    public yRightPosition: number
+    ) {}
   }
+  
 
-  // D3 examples : http://christopheviau.com/d3list/
-  // https://bl.ocks.org/tlfrd/042b2318c8767bad7a485098fbf760fc
+  @Component({
+    selector: "app-slope-chart",
+    templateUrl: "./slope-chart.component.html",
+    styleUrls: ["./slope-chart.component.css"]
+  })
+  export class SlopeChartComponent implements OnChanges {
+    // Inputs
+    @Input() public data: Incident[];
+    @Input() public citiesPopulationData: City[];
+    
+    // Data by city
+    private dataByCityManyIncidents: DataByCity[];
+    private dataByCityFewIncidents: DataByCity[];
+    
+    // Config const stuff
+    static readonly margin = {top: 100, right: 275, bottom: 40, left: 275};
+     
+    static readonly width = 960 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
+    static readonly height = 4000 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
+          
+    static readonly config = {
+      xOffset: 0,
+      yOffset: 0,
+      width: SlopeChartComponent.width,
+      height: SlopeChartComponent.height,
+      labelPositioning: {
+        alpha: 0.5,
+        spacing: 18
+      },
+      leftTitle: "2014",
+      rightTitle: "2017",
+      labelGroupOffset: 5,
+      labelKeyOffset: 50,
+      radius: 6,
+      // Reduce this to turn on detail-on-hover version
+      unfocusOpacity: 0.3
+    }
 
-  private preprocessing() {
+    static readonly nbCitiesToDisplay = 50;
+
+    ngOnChanges(changes: SimpleChanges) {
+      if (changes.data && changes.data.currentValue) {
+        this.preprocessing();
+        this.initialization();
+      }
+    }
+    
+    // D3 examples : http://christopheviau.com/d3list/
+    // https://bl.ocks.org/tlfrd/042b2318c8767bad7a485098fbf760fc
+    
+    private preprocessing() {
     let dataByCity = [];
 
     this.data.forEach((incident: Incident) => {
@@ -60,7 +90,7 @@ export class SlopeChartComponent implements OnChanges {
         if (!city) 
         {
           // Create a new DataByCity if it does not exist yet
-          city = new DataByCity(cleanCityName[0], incident.state, cityFromPopulationDataset.pop, 0, 0, 0, 0);
+          city = new DataByCity(cleanCityName[0], incident.state, cityFromPopulationDataset.pop, 0, 0, 0, 0, 0, 0);
           dataByCity.push(city);
         }
 
@@ -85,41 +115,17 @@ export class SlopeChartComponent implements OnChanges {
     dataByCity.sort((a, b) => { return a.incidentNumber2014 - b.incidentNumber2014});
 
     // Populate sub arrays
-    this.dataByCityFewIncidents = dataByCity.slice(0, 100);
-    this.dataByCityManyIncidents = dataByCity.slice(dataByCity.length - 100, dataByCity.length);
+    this.dataByCityFewIncidents = dataByCity.slice(0, SlopeChartComponent.nbCitiesToDisplay);
+    this.dataByCityManyIncidents = dataByCity.slice(dataByCity.length - SlopeChartComponent.nbCitiesToDisplay, dataByCity.length);
 
     this.data = []; // free up memory
     this.citiesPopulationData = []; // free up memory
   }
 
-  static readonly margin = {top: 100, right: 275, bottom: 40, left: 275};
-   
-  static readonly width = 960 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
-  static readonly height = 2000 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
-        
-  static readonly config = {
-    xOffset: 0,
-    yOffset: 0,
-    width: SlopeChartComponent.width,
-    height: SlopeChartComponent.height,
-    labelPositioning: {
-      alpha: 0.5,
-      spacing: 18
-    },
-    leftTitle: "2014",
-    rightTitle: "2017",
-    labelGroupOffset: 5,
-    labelKeyOffset: 50,
-    radius: 6,
-    // Reduce this to turn on detail-on-hover version
-    unfocusOpacity: 0.3
-  }
 
   // Début mais pas fini
   private initialization() {
 
-    
-        
     var svg = d3.select("body").append("svg")
           .attr("width", SlopeChartComponent.width + SlopeChartComponent.margin.left +SlopeChartComponent.margin.right)
           .attr("height", SlopeChartComponent.height + SlopeChartComponent.margin.top + SlopeChartComponent.margin.bottom)
@@ -129,13 +135,12 @@ export class SlopeChartComponent implements OnChanges {
     var y1 = d3.scaleLinear()
     	.range([SlopeChartComponent.height, 0]);
     
-    
-    
-    function drawSlopeGraph(cfg, data, yScale, leftYAccessor, rightYAccessor) {
-      var slopeGraph = svg.append("g")
-      	.attr("class", "slope-graph")
-      	.attr("transform", "translate(" + [cfg.xOffset, cfg.yOffset] + ")");     
-    }
+    // Useless ?
+    // function drawSlopeGraph(cfg, data, yScale, leftYAccessor, rightYAccessor) {
+    //   var slopeGraph = svg.append("g")
+    //   	.attr("class", "slope-graph")
+    //   	.attr("transform", "translate(" + [cfg.xOffset, cfg.yOffset] + ")");     
+    // }
       
     // Combine ratios into a single array
     // var ratios = [];
@@ -224,16 +229,16 @@ export class SlopeChartComponent implements OnChanges {
         return y1(d.incidentRatio2017);
       });
     
-    var leftSlopeCircle = slopeGroups.append("circle")
+    var leftSlopeGroups = slopeGroups.append("g")
+      .attr("class", "slope-groups-left")
+      .each(function(d) { d.yLeftPosition = y1(d.incidentRatio2014) });
+
+    var leftSlopeCircle = leftSlopeGroups.append("circle")
       .attr("r", SlopeChartComponent.config.radius)
       .attr("cy", d => y1(d.incidentRatio2014));
     
-    var leftSlopeLabels = slopeGroups.append("g")
-      .attr("class", "slope-label-left");
-      // .each(function(d) {
-      //   d.xLeftPosition = -config.labelGroupOffset;
-      //   d.yLeftPosition = y1(d.incidentRatio2014);
-      // })
+    var leftSlopeLabels = leftSlopeGroups.append("g")
+      .attr("class", "slope-label-left")
     
     // leftSlopeLabels.append("text")
     //   .attr("class", "label-figure")
@@ -246,23 +251,23 @@ export class SlopeChartComponent implements OnChanges {
     
     leftSlopeLabels.append("text")
       .attr("x", -SlopeChartComponent.config.labelGroupOffset)
-      .attr("y", d => y1(d.incidentRatio2014))
+      .attr("y", d => d.yLeftPosition)
       .attr("dx", -SlopeChartComponent.config.labelKeyOffset)
       .attr("dy", 3)
       .attr("text-anchor", "end")
       .text(d => d.cityName);
     
-    var rightSlopeCircle = slopeGroups.append("circle")
+    var rightSlopeGroups = slopeGroups.append("g")
+      .attr("class", "slope-groups-left");
+
+    var rightSlopeCircle = rightSlopeGroups.append("circle")
       .attr("r", SlopeChartComponent.config.radius)
       .attr("cx", SlopeChartComponent.config.width)
       .attr("cy", d => y1(d.incidentRatio2017));
     
-    var rightSlopeLabels = slopeGroups.append("g")
-      .attr("class", "slope-label-right");
-      // .each(function(d) {
-      //   d.xRightPosition = width + config.labelGroupOffset;
-      //   d.yRightPosition = y1(d.values[1].max / d.values[1].min);
-      // })
+    var rightSlopeLabels = rightSlopeGroups.append("g")
+      .attr("class", "slope-label-right")
+      .each(function(d) { d.yRightPosition = y1(d.incidentRatio2017) });
     
     // rightSlopeLabels.append("text")
     //   .attr("class", "label-figure")
@@ -275,7 +280,7 @@ export class SlopeChartComponent implements OnChanges {
     
     rightSlopeLabels.append("text")
       .attr("x", SlopeChartComponent.width + SlopeChartComponent.config.labelGroupOffset)
-      .attr("y", d => y1(d.incidentRatio2017))
+      .attr("y", d => d.yRightPosition)
       .attr("dx", SlopeChartComponent.config.labelKeyOffset)
       .attr("dy", 3)
       .attr("text-anchor", "start")
@@ -296,16 +301,19 @@ export class SlopeChartComponent implements OnChanges {
       .attr("dy", -SlopeChartComponent.margin.top / 2)
       .text(SlopeChartComponent.config.rightTitle);
     
-    // this.relax(leftSlopeLabels, "yLeftPosition");
-    // leftSlopeLabels.selectAll("text")
-    // 	.attr("y", ????);
-    
-    // this.relax(rightSlopeLabels, "yRightPosition");
-    // rightSlopeLabels.selectAll("text")
-    // 	.attr("y", ????);
-    
-    // d3.selectAll(".slope-group")
-    // 	.attr("opacity", config.unfocusOpacity);
+    // this.relax(leftSlopeGroups, "yLeftPosition");
+    // this.relax(rightSlopeGroups, "yRightPosition");
+
+
+    //// Async example
+    // this.resolveAfter2Seconds(20).then(value => {
+    //   console.log(`promise result: ${value}`);
+    // });
+    // console.log('I will not wait until promise is resolved');
+    ////
+
+    // rightSlopeLabels.select("text")
+    // 	.attr("y", d => d.yRightPosition);
     
     // var voronoiGroup = svg.append("g")
     // 	.attr("class", "voronoi");
@@ -319,32 +327,46 @@ export class SlopeChartComponent implements OnChanges {
   // });  
   }
 
+  //// Async example
+  // private resolveAfter2Seconds(x) {
+  //   return new Promise(resolve => {
+  //     setTimeout(() => {
+  //       resolve(x);
+  //     }, 2000);
+  //   });
+  // }
+  ////
+
   // Function to reposition an array selection of labels (in the y-axis)
   private relax(labels, position) {
-    var again = false;
-    labels.each(function (d, i) {
-      var a = this;
-      var da = d3.select(a).datum();
-      var y1 = da[position];
-      labels.each(function (d, j) {
-        var  b = this;
-        if (a == b) return;
-        var db = d3.select(b).datum();
-        var y2 = db[position];
-        var deltaY = y1 - y2;
+    do{
+      var again = false;
+      labels.each((d, i) => {
+        var a = d;
+        //var da = d3.select(a).datum();
+        var y1 = d[position];
+        labels.each((d, j) => {
+          var  b = d;
+          if (a == b) return;
+          //var db = d3.select(b).datum();
+          var y2 = b[position];
+          var deltaY = y1 - y2;
 
-        if (Math.abs(deltaY) > SlopeChartComponent.config.labelPositioning.spacing) return;
+          if (Math.abs(deltaY) > SlopeChartComponent.config.labelPositioning.spacing) return;
 
-        again = true;
-        var sign = deltaY > 0 ? 1 : -1;
-        var adjust = sign * SlopeChartComponent.config.labelPositioning.alpha;
-        da[position] = +y1 + adjust;
-        db[position] = +y2 - adjust;
-
-        if (again) {
-         this.relax(labels, position);
-        }
+          again = true;
+          var sign = deltaY > 0 ? 1 : -1;
+          var adjust = sign * SlopeChartComponent.config.labelPositioning.alpha;
+          a[position] = +y1 + adjust;
+          b[position] = +y2 - adjust;
+        })
       })
-    })
+    }while(again);
+
+    // Update label positions
+    labels.select("text")
+      .attr("y", d => d[position]);
+    labels.select("circle")
+      .attr("cy", d => d[position]);
   }
 }
