@@ -16,79 +16,67 @@ export class LineChartComponent implements OnInit {
   ngOnInit() {
     d3.json("../../data-by-state.json").then((data: DataByState[]) => {
       this.dataByState = data;
-
       this.initialization();
     });
   }
 
-  // Début mais pas fini
   private initialization() {
-    const marginFocus = {
+    const margin = {
       top: 30,
       right: 10,
       bottom: 100,
       left: 60
     };
-    const widthFocus = 1000 - marginFocus.left - marginFocus.right;
-    const heightFocus = 500 - marginFocus.top - marginFocus.bottom;
+    const width = 1000 - margin.left - margin.right;
+    const height = 500 - margin.top - margin.bottom;
 
-    const xFocus = d3.scaleLinear().range([0, widthFocus]);
-    const yFocus = d3.scaleLinear().range([heightFocus, 0]);
+    const xScale = d3.scaleLinear().range([0, width]);
+    const yScale = d3.scaleLinear().range([height, 0]);
 
     const tickValues = [];
     for (let i = 0; i < this.NUMBER_OF_MONTHS / 4; i++) {
       tickValues.push(i * 4);
     }
 
-    const xAxisFocus = d3
-      .axisBottom(xFocus)
+    const xAxis = d3.axisBottom(xScale)
       .tickFormat((d: number) => Localization.getFormattedDateByMonth(d))
       .tickValues(tickValues);
-    const yAxisFocus = d3.axisLeft(yFocus);
+    const yAxis = d3.axisLeft(yScale);
 
-    const svg = d3
-      .select("svg")
-      .attr("width", widthFocus + marginFocus.left + marginFocus.right)
-      .attr("height", heightFocus + marginFocus.top + marginFocus.bottom);
+    const svg = d3.select("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
 
-    const focus = svg
-      .append("g")
-      .attr(
-        "transform",
-        "translate(" + marginFocus.left + "," + marginFocus.top + ")"
-      );
+    const g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    const lineFocus = this.createLine(xFocus, yFocus);
+    const line = this.createLine(xScale, yScale);
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
     this.domainColor(color);
 
-    this.domainX(xFocus);
-    this.domainY(yFocus);
+    this.domainX(xScale);
+    this.domainY(yScale);
 
-    this.createFocusLineChart(focus, lineFocus, color, this.updateTooltip, this.mouseout, yFocus);
+    this.createLineChart(g, line, color, this.updateTooltip, this.mouseout, yScale);
 
-    focus
-      .append("g")
+    g.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + heightFocus + ")")
-      .call(xAxisFocus);
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
 
-    focus
-      .append("g")
+    g.append("g")
       .attr("class", "y axis")
-      .call(yAxisFocus);
+      .call(yAxis);
 
-    focus
-      .append("text")
+    g.append("text")
       .attr("fill", "currentColor")
       .attr("text-anchor", "end")
-      .attr("x", widthFocus)
-      .attr("y", heightFocus + 40)
+      .attr("x", width)
+      .attr("y", height + 40)
       .text("Temps");
 
-    focus
-      .append("text")
+    g.append("text")
       .attr("fill", "currentColor")
       .attr("text-anchor", "end")
       .attr("y", -55)
@@ -97,39 +85,32 @@ export class LineChartComponent implements OnInit {
       .text("Nombre d'incidents");
   }
 
-  private createLine(
-    x: d3.ScaleLinear<number, number>,
-    y: d3.ScaleLinear<number, number>
-  ) {
-    return d3
-      .line()
-      .x((d, i) => x(i))
+  private createLine(x: d3.ScaleLinear<number, number>, y: d3.ScaleLinear<number, number>) {
+    return d3.line()
+      .x((d: any, i: number) => x(i))
       .y((d: any) => y(d))
       .curve(d3.curveBasisOpen);
   }
 
   private domainColor(color: d3.ScaleOrdinal<string, string>) {
-    const states = this.dataByState.map(state => state.state);
-    color.domain(states);
+    color.domain(this.dataByState.map(state => state.state));
   }
 
-  private domainX(xFocus: d3.ScaleLinear<number, number>) {
-    xFocus.domain([0, this.NUMBER_OF_MONTHS - 1]);
+  private domainX(xScale: d3.ScaleLinear<number, number>) {
+    xScale.domain([0, this.NUMBER_OF_MONTHS - 1]);
   }
 
-  private domainY(yFocus: d3.ScaleLinear<number, number>) {
-    yFocus
-      .domain([0, d3.max(this.dataByState, i => d3.max(i.incidents_by_month))])
-      .nice();
+  private domainY(yScale: d3.ScaleLinear<number, number>) {
+    yScale.domain([0, d3.max(this.dataByState, i => d3.max(i.incidents_by_month))]).nice();
   }
 
-  private createFocusLineChart(
+  private createLineChart(
     g: d3.Selection<SVGGElement, {}, HTMLElement, any>,
     line: any,
     color: d3.ScaleOrdinal<string, string>,
     updateTooltip: Function,
     mouseout: Function,
-    yFocus: d3.ScaleLinear<number, number>
+    yScale: d3.ScaleLinear<number, number>
   ) {
     g.selectAll("path")
       .data(this.dataByState)
@@ -145,30 +126,29 @@ export class LineChartComponent implements OnInit {
         d3.select(this).style("opacity", 1);
         d3.select(this).attr("stroke-width", 10);
 
-        updateTooltip(d, yFocus, this);
+        updateTooltip(d, yScale, this);
       })
       .on("mousemove", function (d) {
         d3.select(this).attr("stroke-width", 10);
 
-        updateTooltip(d, yFocus, this);
+        updateTooltip(d, yScale, this);
       })
-      .on("mouseout", function (d) {
+      .on("mouseout", function () {
         g.selectAll("path").style("opacity", 1);
         d3.select(this).attr("stroke-width", 1);
 
-        mouseout(d);
+        mouseout();
       });
   }
 
-  private updateTooltip(d: DataByState, yFocus: d3.ScaleLinear<number, number>, self: SVGPathElement) {
-    d3
-      .select("#tooltip")
+  private updateTooltip(d: DataByState, yScale: d3.ScaleLinear<number, number>, self: SVGPathElement) {
+    d3.select("#tooltip")
       .style("display", "inline")
       .style("left", d3.event.pageX + "px")
       .style("top", d3.event.pageY + "px")
       .html(
         "<p>État : " + d.state + "</p>" +
-        "<p>Incidents : " + Math.round(yFocus.invert(d3.mouse(self)[1])) + "</p>"
+        "<p>Incidents : " + Math.round(yScale.invert(d3.mouse(self)[1])) + "</p>"
       );
   }
 
