@@ -66,7 +66,7 @@ export class LineChartComponent implements OnInit {
     this.domainX(xFocus);
     this.domainY(yFocus);
 
-    this.createFocusLineChart(focus, lineFocus, color);
+    this.createFocusLineChart(focus, lineFocus, color, this.updateTooltip, this.mouseout, yFocus);
 
     focus
       .append("g")
@@ -126,7 +126,10 @@ export class LineChartComponent implements OnInit {
   private createFocusLineChart(
     g: d3.Selection<SVGGElement, {}, HTMLElement, any>,
     line: any,
-    color: d3.ScaleOrdinal<string, string>
+    color: d3.ScaleOrdinal<string, string>,
+    updateTooltip: Function,
+    mouseout: Function,
+    yFocus: d3.ScaleLinear<number, number>
   ) {
     g.selectAll("path")
       .data(this.dataByState)
@@ -136,6 +139,40 @@ export class LineChartComponent implements OnInit {
       .attr("stroke", d => color(d.state))
       .attr("d", d => line(d.incidents_by_month))
       .attr("clip-path", "url(#clip)")
-      .attr("class", d => d.state);
+      .attr("class", d => d.state)
+      .on("mouseover", function (d) {
+        g.selectAll("path").style("opacity", 0.5);
+        d3.select(this).style("opacity", 1);
+        d3.select(this).attr("stroke-width", 10);
+
+        updateTooltip(d, yFocus, this);
+      })
+      .on("mousemove", function (d) {
+        d3.select(this).attr("stroke-width", 10);
+
+        updateTooltip(d, yFocus, this);
+      })
+      .on("mouseout", function (d) {
+        g.selectAll("path").style("opacity", 1);
+        d3.select(this).attr("stroke-width", 1);
+
+        mouseout(d);
+      });
+  }
+
+  private updateTooltip(d: DataByState, yFocus: d3.ScaleLinear<number, number>, self: SVGPathElement) {
+    d3
+      .select("#tooltip")
+      .style("display", "inline")
+      .style("left", d3.event.pageX + "px")
+      .style("top", d3.event.pageY + "px")
+      .html(
+        "<p>État : " + d.state + "</p>" +
+        "<p>Incidents : " + Math.round(yFocus.invert(d3.mouse(self)[1])) + "</p>"
+      );
+  }
+
+  private mouseout() {
+    d3.select("#tooltip").style("display", "none");
   }
 }
