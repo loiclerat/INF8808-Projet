@@ -11,7 +11,7 @@ import { City, CityJson } from "./city.model";
 })
 export class AppComponent implements OnInit {
   public data: Incident[];
-  public citiesData: City[];
+  public citiesPopulationData: City[];
 
   ngOnInit() {
     const parseTime = d3.timeParse("%Y-%m-%d");
@@ -39,9 +39,9 @@ export class AppComponent implements OnInit {
 
 
     d3.json("../../citypop.json").then((data: CityJson[]) => {
-      this.citiesData = [];
+      this.citiesPopulationData = [];
       data.forEach(city => { 
-        this.citiesData.push(new City(city.city, city.state, city.pop)); 
+        this.citiesPopulationData.push(new City(city.city, city.state, city.pop)); 
       });
     });
   }

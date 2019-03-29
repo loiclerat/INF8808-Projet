@@ -7,8 +7,10 @@ import { City } from "src/app/city.model";
 class DataByCity {
   constructor(
     public cityName: string,
-    // TODO : do we really need this one ?
     public stateName: string,
+    public population: number,
+    public incidentNumber2014: number,
+    public incidentNumber2017: number,
     public incidentRatio2014: number,
     public incidentRatio2017: number
   ) {}
@@ -21,9 +23,10 @@ class DataByCity {
 })
 export class SlopeChartComponent implements OnChanges {
   @Input() public data: Incident[];
-  @Input() public citiesData: City[];
+  @Input() public citiesPopulationData: City[];
 
-  private dataByCity: DataByCity[];
+  private dataByCityManyIncidents: DataByCity[];
+  private dataByCityFewIncidents: DataByCity[];
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.data && changes.data.currentValue) {
@@ -36,7 +39,7 @@ export class SlopeChartComponent implements OnChanges {
   // https://bl.ocks.org/tlfrd/042b2318c8767bad7a485098fbf760fc
 
   private preprocessing() {
-    this.dataByCity = [];
+    let dataByCity = [];
 
     this.data.forEach((incident: Incident) => {
       const year = incident.date.getFullYear();
@@ -48,30 +51,43 @@ export class SlopeChartComponent implements OnChanges {
       let cleanCityName = incident.city_or_county.split(" (", 1);
 
       // If the city exist in our city population dataset
-      if (this.citiesData.find(d => d.city === cleanCityName[0]))
+      let cityFromPopulationDataset;
+      if (cityFromPopulationDataset = this.citiesPopulationData.find(d => d.city === cleanCityName[0] && d.state === incident.state))
       {
-        let city = this.dataByCity.find(d => d.cityName === cleanCityName[0]);
+        let city = dataByCity.find(d => d.cityName === cleanCityName[0] && d.stateName === incident.state);
         if (!city) 
         {
           // Create a new DataByCity if it does not exist yet
-          city = new DataByCity(cleanCityName[0], incident.state, 0, 0);
-          this.dataByCity.push(city);
+          city = new DataByCity(cleanCityName[0], incident.state, cityFromPopulationDataset.pop, 0, 0, 0, 0);
+          dataByCity.push(city);
         }
 
         // Update incident number
         if (year == 2014)
         {
-          city.incidentRatio2014++;
+          city.incidentNumber2014++;
         }
         else
         {
-          city.incidentRatio2017++;
+          city.incidentNumber2017++;
         }
       }
     });
 
+    dataByCity.forEach((city: DataByCity) => {
+      city.incidentRatio2014 = city.incidentNumber2014 / city.population;
+      city.incidentRatio2017 = city.incidentNumber2017 / city.population;
+    });
+
+    // On trie dans l'ordre croissant du nomber d'incidents en 2014
+    dataByCity.sort((a, b) => { return a.incidentNumber2014 - b.incidentNumber2017});
+
+    // Populate sub arrays
+    this.dataByCityFewIncidents = dataByCity.slice(0, 100);
+    this.dataByCityManyIncidents = dataByCity.slice(dataByCity.length - 100, dataByCity.length);
+
     this.data = []; // free up memory
-    this.citiesData = []; // free up memory
+    this.citiesPopulationData = []; // free up memory
   }
 
   // Début mais pas fini
@@ -151,11 +167,11 @@ export class SlopeChartComponent implements OnChanges {
     // });
     
 
-    var y1Min = d3.min(this.dataByCity, function(d) {              
+    var y1Min = d3.min(this.dataByCityManyIncidents, function(d) {              
       return Math.min(d.incidentRatio2014, d.incidentRatio2017);
     });
     
-    var y1Max = d3.max(this.dataByCity, function(d) {     
+    var y1Max = d3.max(this.dataByCityManyIncidents, function(d) {     
       return Math.max(d.incidentRatio2014, d.incidentRatio2017);
     });
 
@@ -181,7 +197,7 @@ export class SlopeChartComponent implements OnChanges {
     
     var slopeGroups = svg.append("g")
       .selectAll("g")
-      .data(this.dataByCity)
+      .data(this.dataByCityManyIncidents)
       .enter().append("g")
         .attr("class", "slope-group");
     
@@ -207,14 +223,14 @@ export class SlopeChartComponent implements OnChanges {
       //   d.yLeftPosition = y1(d.incidentRatio2014);
       // })
     
-    leftSlopeLabels.append("text")
-      .attr("class", "label-figure")
-      .attr("x", -config.labelGroupOffset)
-      .attr("y", d => y1(d.incidentRatio2014))
-      .attr("dx", -10)
-      .attr("dy", 3)
-      .attr("text-anchor", "end")
-      .text(d => (d.incidentRatio2014).toPrecision(3));
+    // leftSlopeLabels.append("text")
+    //   .attr("class", "label-figure")
+    //   .attr("x", -config.labelGroupOffset)
+    //   .attr("y", d => y1(d.incidentRatio2014))
+    //   .attr("dx", -10)
+    //   .attr("dy", 3)
+    //   .attr("text-anchor", "end")
+    //   .text(d => (d.incidentRatio2014).toPrecision(3));
     
     leftSlopeLabels.append("text")
       .attr("x", -config.labelGroupOffset)
@@ -236,14 +252,14 @@ export class SlopeChartComponent implements OnChanges {
       //   d.yRightPosition = y1(d.values[1].max / d.values[1].min);
       // })
     
-    rightSlopeLabels.append("text")
-      .attr("class", "label-figure")
-      .attr("x", width + config.labelGroupOffset)
-      .attr("y", d => y1(d.incidentRatio2017))
-      .attr("dx", 10)
-      .attr("dy", 3)
-      .attr("text-anchor", "start")
-      .text(d => (d.incidentRatio2017).toPrecision(3));
+    // rightSlopeLabels.append("text")
+    //   .attr("class", "label-figure")
+    //   .attr("x", width + config.labelGroupOffset)
+    //   .attr("y", d => y1(d.incidentRatio2017))
+    //   .attr("dx", 10)
+    //   .attr("dy", 3)
+    //   .attr("text-anchor", "start")
+    //   .text(d => (d.incidentRatio2017).toPrecision(3));
     
     rightSlopeLabels.append("text")
       .attr("x", width + config.labelGroupOffset)
