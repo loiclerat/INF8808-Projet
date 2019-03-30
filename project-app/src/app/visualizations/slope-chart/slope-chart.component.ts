@@ -37,7 +37,8 @@ class DataByCity {
     templateUrl: "./slope-chart.component.html",
     styleUrls: ["./slope-chart.component.css"]
   })
-  export class SlopeChartComponent implements OnChanges {
+  export class SlopeChartComponent implements OnChanges 
+  {
     // Inputs
     @Input() public data: Incident[];
     @Input() public citiesPopulationData: City[];
@@ -47,10 +48,10 @@ class DataByCity {
     private dataByCityFewIncidents: DataByCity[];
     
     // Config stuff
-    static readonly margin = {top: 50, right: 160, bottom: 40, left: 160};
+    static readonly margin = {top: 80, right: 160, bottom: 40, left: 160};
      
     static readonly width = 650 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
-    static readonly height = 3500 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
+    static readonly height = 4000 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
           
     static readonly config = {
       xOffset: 0,
@@ -71,7 +72,8 @@ class DataByCity {
 
     static readonly nbCitiesToDisplay = 50;
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges) 
+    {
       if (changes.data && changes.data.currentValue) {
         this.preprocessing();
         this.initialization();
@@ -81,62 +83,69 @@ class DataByCity {
     // D3 examples : http://christopheviau.com/d3list/
     // https://bl.ocks.org/tlfrd/042b2318c8767bad7a485098fbf760fc
     
-    private preprocessing() {
-    let dataByCity = [];
+    private preprocessing() 
+    {
+      let dataByCity = [];
 
-    this.data.forEach((incident: Incident) => {
-      const year = incident.date.getFullYear();
-      if (year != 2014 && year != 2017)
-      {
-        return;
-      }
-
-      let cleanCityName = incident.city_or_county.split(" (", 1);
-
-      // If the city exist in our city population dataset
-      let cityFromPopulationDataset;
-      if (cityFromPopulationDataset = this.citiesPopulationData.find(d => d.city === cleanCityName[0] && d.state === incident.state))
-      {
-        let city = dataByCity.find(d => d.cityName === cleanCityName[0] && d.stateName === incident.state);
-        if (!city) 
+      this.data.forEach((incident: Incident) => {
+        const year = incident.date.getFullYear();
+        if (year != 2014 && year != 2017)
         {
-          // Create a new DataByCity if it does not exist yet
-          city = new DataByCity(cleanCityName[0], incident.state, cityFromPopulationDataset.pop, 0, 0, 0, 0, 0, 0);
-          dataByCity.push(city);
+          return;
         }
 
-        // Update incident number
-        if (year == 2014)
+        let cleanCityName = incident.city_or_county.split(" (", 1);
+
+        // If the city exist in our city population dataset
+        let cityFromPopulationDataset;
+        if (cityFromPopulationDataset = this.citiesPopulationData.find(d => d.city === cleanCityName[0] && d.state === incident.state))
         {
-          city.incidentNumber2014++;
+          let city = dataByCity.find(d => d.cityName === cleanCityName[0] && d.stateName === incident.state);
+          if (!city) 
+          {
+            // Create a new DataByCity if it does not exist yet
+            city = new DataByCity(cleanCityName[0], incident.state, cityFromPopulationDataset.pop, 0, 0, 0, 0, 0, 0);
+            dataByCity.push(city);
+          }
+
+          // Update incident number
+          if (year == 2014)
+          {
+            city.incidentNumber2014++;
+          }
+          else
+          {
+            city.incidentNumber2017++;
+          }
         }
-        else
-        {
-          city.incidentNumber2017++;
-        }
-      }
-    });
+      });
 
-    dataByCity.forEach((city: DataByCity) => {
-      city.incidentRatio2014 = city.incidentNumber2014 / city.population;
-      city.incidentRatio2017 = city.incidentNumber2017 / city.population;
-    });
+      dataByCity.forEach((city: DataByCity) => {
+        city.incidentRatio2014 = city.incidentNumber2014 / city.population;
+        city.incidentRatio2017 = city.incidentNumber2017 / city.population;
+      });
 
-    // On trie dans l'ordre croissant du nomber d'incidents en 2014
-    dataByCity.sort((a, b) => { return a.incidentNumber2014 - b.incidentNumber2014});
+      // On trie dans l'ordre croissant du nomber d'incidents en 2014
+      dataByCity.sort((a, b) => { return a.incidentNumber2014 - b.incidentNumber2014});
 
-    // Populate sub arrays
-    this.dataByCityFewIncidents = dataByCity.slice(0, SlopeChartComponent.nbCitiesToDisplay);
-    this.dataByCityManyIncidents = dataByCity.slice(dataByCity.length - SlopeChartComponent.nbCitiesToDisplay, dataByCity.length);
+      // Populate sub arrays
+      this.dataByCityFewIncidents = dataByCity.slice(0, SlopeChartComponent.nbCitiesToDisplay);
+      this.dataByCityManyIncidents = dataByCity.slice(dataByCity.length - SlopeChartComponent.nbCitiesToDisplay, dataByCity.length);
 
-    this.data = []; // free up memory
-    this.citiesPopulationData = []; // free up memory
+      this.data = []; // free up memory
+      this.citiesPopulationData = []; // free up memory
   }
 
-  private initialization() {
+  private initialization() 
+  {
+    this.createSlopeChart(this.dataByCityManyIncidents, "slope-chart-1");
+    this.createSlopeChart(this.dataByCityFewIncidents, "slope-chart-2");
+  }
 
+  private createSlopeChart(data : DataByCity[], svgId : string)
+  {
     // Create main svg
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#"+svgId)
           .attr("width", SlopeChartComponent.width + SlopeChartComponent.margin.left +SlopeChartComponent.margin.right)
           .attr("height", SlopeChartComponent.height + SlopeChartComponent.margin.top + SlopeChartComponent.margin.bottom)
         .append("g")
@@ -147,11 +156,11 @@ class DataByCity {
     	.range([SlopeChartComponent.height, 0]);
 
     // Calculate y domain for ratios
-    var y1Min = d3.min(this.dataByCityManyIncidents, function(d) {              
+    var y1Min = d3.min(data, function(d) {              
       return Math.min(d.incidentRatio2014, d.incidentRatio2017);
     });
     
-    var y1Max = d3.max(this.dataByCityManyIncidents, function(d) {     
+    var y1Max = d3.max(data, function(d) {     
       return Math.max(d.incidentRatio2014, d.incidentRatio2017);
     });
 
@@ -160,7 +169,7 @@ class DataByCity {
     // Create slope groups
     var slopeGroups = svg.append("g")
       .selectAll("g")
-      .data(this.dataByCityManyIncidents)
+      .data(data)
       .enter().append("g")
         .attr("class", "slope-group")
         .attr("opacity", SlopeChartComponent.config.unfocusOpacity)
@@ -286,7 +295,7 @@ class DataByCity {
           d2[position] = y2 - adjust;
           
           // We might need to adjust the maximum height value 
-          heightAdjust += d1[position] > SlopeChartComponent.config.height ? adjust : 0;
+          heightAdjust += d1[position] > SlopeChartComponent.config.height + heightAdjust ? adjust : 0;
         })
       })
     }while(again);
