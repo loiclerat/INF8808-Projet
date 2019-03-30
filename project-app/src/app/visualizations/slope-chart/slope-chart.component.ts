@@ -1,3 +1,14 @@
+// TODO: 
+// - tooltip
+// - second graphe
+// - titre
+// - légende
+// - Improve style
+// - Modif données pour essayer d'avoir les grandes villes manquantes
+// - Cleaning
+// - Highlight grandes villes ?
+// - Test relax meilleur ?
+
 import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
 import * as d3 from "d3";
 
