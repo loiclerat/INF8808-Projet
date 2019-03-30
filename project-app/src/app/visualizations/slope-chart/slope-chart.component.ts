@@ -1,11 +1,9 @@
 // TODO: 
 // - tooltip
-// - second graphe
-// - titre
-// - légende
+// - légende : ticks (incidents par 1000 habitants), top100/bottom100
 // - Improve style
 // - Modif données pour essayer d'avoir les grandes villes manquantes
-// - Cleaning
+// - Optimization ?
 // - Highlight grandes villes ?
 // - Test relax meilleur ?
 
@@ -80,19 +78,13 @@ class DataByCity {
       }
     }
     
-    // D3 examples : http://christopheviau.com/d3list/
-    // https://bl.ocks.org/tlfrd/042b2318c8767bad7a485098fbf760fc
-    
     private preprocessing() 
     {
       let dataByCity = [];
 
       this.data.forEach((incident: Incident) => {
         const year = incident.date.getFullYear();
-        if (year != 2014 && year != 2017)
-        {
-          return;
-        }
+        if (year != 2014 && year != 2017) return;
 
         let cleanCityName = incident.city_or_county.split(" (", 1);
 
