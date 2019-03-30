@@ -1,6 +1,5 @@
 body { 
     margin:0;
-
     top:0;
     right:0;
     bottom:0;
@@ -12,7 +11,7 @@ body {
 }
 
 .title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
 }
 
@@ -23,7 +22,7 @@ body {
 }
 
 .slope-label-left, .slope-label-right {
-    font-size: 16px;
+    font-size: 14px;
     cursor: default;
     font-weight: 400;
 }

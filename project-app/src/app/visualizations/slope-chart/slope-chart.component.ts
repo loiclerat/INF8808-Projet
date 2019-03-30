@@ -47,10 +47,10 @@ class DataByCity {
     private dataByCityFewIncidents: DataByCity[];
     
     // Config stuff
-    static readonly margin = {top: 100, right: 275, bottom: 40, left: 275};
+    static readonly margin = {top: 50, right: 160, bottom: 40, left: 160};
      
-    static readonly width = 960 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
-    static readonly height = 4000 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
+    static readonly width = 650 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
+    static readonly height = 3500 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
           
     static readonly config = {
       xOffset: 0,
@@ -58,15 +58,14 @@ class DataByCity {
       width: SlopeChartComponent.width,
       height: SlopeChartComponent.height,
       labelPositioning: {
-        alpha: 0.5,
-        spacing: 18
+        alpha: 0.7,
+        spacing: 16
       },
       leftTitle: "2014",
       rightTitle: "2017",
       labelGroupOffset: 5,
-      labelKeyOffset: 50,
-      radius: 6,
-      // Reduce this to turn on detail-on-hover version
+      labelKeyOffset: 15,
+      radius: 4,
       unfocusOpacity: 0.3
     }
 
@@ -146,13 +145,6 @@ class DataByCity {
     // Create Y axis scale
     var yScale = d3.scaleLinear()
     	.range([SlopeChartComponent.height, 0]);
-    
-    // Useless ?
-    // function drawSlopeGraph(cfg, data, yScale, leftYAccessor, rightYAccessor) {
-    //   var slopeGraph = svg.append("g")
-    //   	.attr("class", "slope-graph")
-    //   	.attr("transform", "translate(" + [cfg.xOffset, cfg.yOffset] + ")");     
-    // }    
 
     // Calculate y domain for ratios
     var y1Min = d3.min(this.dataByCityManyIncidents, function(d) {              
@@ -164,11 +156,6 @@ class DataByCity {
     });
 
     yScale.domain([y1Min, y1Max]);
-          
-    // var voronoi = d3.voronoi()
-    //   .x(d => d.year == "2012-2013" ? 0 : width)
-    //   .y(d => yScale(d.max / d.min))
-    //   .extent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
     
     // Create slope groups
     var slopeGroups = svg.append("g")
@@ -268,64 +255,38 @@ class DataByCity {
     .attr("y1", d => d.yLeftPosition)
     .attr("x2", SlopeChartComponent.config.width)
     .attr("y2", d => d.yRightPosition);
-    
-
-    //// Async example
-    // this.resolveAfter2Seconds(20).then(value => {
-    //   console.log(`promise result: ${value}`);
-    // });
-    // console.log('I will not wait until promise is resolved');
-    ////
-
-    // rightSlopeLabels.select("text")
-    // 	.attr("y", d => d.yRightPosition);
-    
-    // var voronoiGroup = svg.append("g")
-    // 	.attr("class", "voronoi");
-    
-  //   voronoiGroup.selectAll("path")
-  //   	.data(voronoi.polygons(d3.merge(nestedByName.map(d => d.values))))
-  //   	.enter().append("path")
-  //   		.attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; })
-  //   		.on("mouseover", mouseover)
-  //   		.on("mouseout", mouseout);
-  // });  
   }
 
-  //// Async example
-  // private resolveAfter2Seconds(x) {
-  //   return new Promise(resolve => {
-  //     setTimeout(() => {
-  //       resolve(x);
-  //     }, 2000);
-  //   });
-  // }
-  ////
-
-  // Function to reposition an array selection of labels (in the y-axis)
-  private relax(labels, position) {
+  // Function to reposition an array selection of slope groups (in the y-axis)
+  private relax(slopeGroups, position) {
     var heightAdjust = 0;
+    
     do{
       var again = false;
-      labels.each((d, i) => {
-        var a = d;
+      
+      slopeGroups.each((d, i) => {
+        var d1 = d;
         var y1 = d[position];
-        labels.each((d, j) => {
-          var  b = d;
-          if (a == b) return;
-          var y2 = b[position];
+
+        slopeGroups.each((d, j) => {
+          var d2 = d;
+
+          if (d1 == d2) return;
+
+          var y2 = d2[position];
           var deltaY = y1 - y2;
 
+          // If enough space, dont't need to relax
           if (Math.abs(deltaY) > SlopeChartComponent.config.labelPositioning.spacing) return;
 
           again = true;
           var sign = deltaY > 0 ? 1 : -1;
           var adjust = sign * SlopeChartComponent.config.labelPositioning.alpha;
-          a[position] = +y1 + adjust;
-          b[position] = +y2 - adjust;
+          d1[position] = y1 + adjust;
+          d2[position] = y2 - adjust;
           
           // We might need to adjust the maximum height value 
-          heightAdjust += a[position] > SlopeChartComponent.config.height ? adjust : 0;
+          heightAdjust += d1[position] > SlopeChartComponent.config.height ? adjust : 0;
         })
       })
     }while(again);
