@@ -9,6 +9,7 @@
 
 import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
 import * as d3 from "d3";
+import d3Tip from "d3-tip";
 
 import { Incident } from "src/app/incident.model";
 import { City } from "src/app/city.model";
@@ -157,6 +158,14 @@ class DataByCity {
     });
 
     yScale.domain([y1Min, y1Max]);
+
+    // Create tip
+    var tip = d3Tip()
+        .attr('class', 'd3-tip');
+    
+    tip.html(d => {
+        return "blabla";
+    });
     
     // Create slope groups
     var slopeGroups = svg.append("g")
@@ -165,12 +174,19 @@ class DataByCity {
       .enter().append("g")
         .attr("class", "slope-group")
         .attr("opacity", SlopeChartComponent.config.unfocusOpacity)
-        .on("mouseover", function() { d3.select(this).attr("opacity", 1) })
-        .on("mouseout", function() { 
-          let opacity = SlopeChartComponent.config.unfocusOpacity;
-          d3.select(this).attr("opacity", SlopeChartComponent.config.unfocusOpacity) 
+        .on("mouseover", function(d) { 
+          d3.select(this).attr("opacity", 1);
+          tip.show(d, this)
+            .style("left", (d3.event.pageX - 10) + "px")
+            .style("top", (d3.event.pageY - 20) + "px");
+        })
+        .on("mouseout", function(d) { 
+          d3.select(this).attr("opacity", SlopeChartComponent.config.unfocusOpacity) ;
+          tip.hide(d);
         });
     
+    slopeGroups.call(tip);
+
     // Left groups
     var leftSlopeGroups = slopeGroups.append("g")
       .attr("class", "slope-groups-left")
@@ -256,6 +272,8 @@ class DataByCity {
     .attr("y1", d => d.yLeftPosition)
     .attr("x2", SlopeChartComponent.config.width)
     .attr("y2", d => d.yRightPosition);
+
+    
   }
 
   // Function to reposition an array selection of slope groups (in the y-axis)
