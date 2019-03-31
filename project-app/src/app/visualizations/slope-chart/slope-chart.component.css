@@ -50,3 +50,27 @@ circle {
     stroke: black;
     stroke-width: 2px;
 }
+
+.d3-tip {
+    line-height: 1.2;
+    padding: 12px;
+    border-radius: 2px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.7);
+    font-size: 13px;
+  }
+  
+  .d3-tip:after {
+    display: inline;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin: -1px 0 0 0;
+    box-sizing: border-box;
+    font-size: 10px;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+  }

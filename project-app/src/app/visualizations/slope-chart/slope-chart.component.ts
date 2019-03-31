@@ -164,7 +164,12 @@ class DataByCity {
         .attr('class', 'd3-tip');
     
     tip.html(d => {
-        return "blabla";
+        return `Ville: <b> ${d.cityName} </b> <br>
+                Etat: <b> ${d.stateName} </b> <br>
+                Population: <b> ${d.population} </b> <br>
+                Incidents (2014): <b> ${d.incidentNumber2014} </b> <br>
+                Incidents (2017): <b> ${d.incidentNumber2017} </b>
+                `
     });
     
     // Create slope groups
@@ -177,8 +182,8 @@ class DataByCity {
         .on("mouseover", function(d) { 
           d3.select(this).attr("opacity", 1);
           tip.show(d, this)
-            .style("left", (d3.event.pageX - 10) + "px")
-            .style("top", (d3.event.pageY - 20) + "px");
+            .style("left", (d3.event.pageX - 72) + "px")
+            .style("top", (d3.event.pageY - 130) + "px");
         })
         .on("mouseout", function(d) { 
           d3.select(this).attr("opacity", SlopeChartComponent.config.unfocusOpacity) ;
