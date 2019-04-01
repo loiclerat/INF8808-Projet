@@ -179,6 +179,8 @@ export class SlopeChartComponent implements OnInit {
       return `<div>Ville: <b> ${d.cityName} </b> <br>
                 Etat: <b> ${d.stateName} </b> <br>
                 Population: <b> ${d.population} </b> <br>
+                Ratio par 1000 habitants (2014): <b> ${this.formatRatio(d.incidentRatio2014)} </b> <br>
+                Ratio par 1000 habitants (2017): <b> ${this.formatRatio(d.incidentRatio2017)} </b> <br>
                 Incidents (2014): <b> ${d.incidentNumber2014} </b> <br>
                 Incidents (2017): <b> ${d.incidentNumber2017} </b> </div>`;
     });
@@ -194,8 +196,8 @@ export class SlopeChartComponent implements OnInit {
       .on("mouseover", function (d) {
         d3.select(this).attr("opacity", 1);
         tip.show(d, this)
-          .style("left", (d3.event.pageX - 72) + "px")
-          .style("top", (d3.event.pageY - 130) + "px");
+          .style("left", (d3.event.pageX - 140) + "px")
+          .style("top", (d3.event.pageY - 150) + "px");
       })
       .on("mouseout", function (d) {
         d3.select(this).attr("opacity", SlopeChartComponent.config.unfocusOpacity);
@@ -291,6 +293,10 @@ export class SlopeChartComponent implements OnInit {
       .attr("y1", d => d.yLeftPosition)
       .attr("x2", SlopeChartComponent.config.width)
       .attr("y2", d => d.yRightPosition);
+  }
+
+  private formatRatio(ratio: number): string {
+    return (Math.round(ratio * 100000) / 100).toString().replace(".", ",");
   }
 
   // Function to reposition an array selection of slope groups (in the y-axis)
