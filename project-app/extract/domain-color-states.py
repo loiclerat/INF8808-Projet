@@ -2,13 +2,14 @@ import csv
 import io
 import json
 
+file_name = "../data.json"
 
 state_years_dict = dict()
 
 county_years_dict = dict()
 
 
-file_name = "domain_States.json"
+file_name = "result_Counties.json"
 extracted_results = []
 columns = []
 isHeader = True
@@ -22,11 +23,16 @@ csvFile.close()
 
 
 for year in data:
+	max = 0
 	for state in data[year]:
-		data[year][state] = data[year][state] /  data[year]["max"]
+		if data[year][state] > max:
+			max = data[year][state]
+			
+	data[year]["max"] = max
+	print(max)
 
 		
-with open('domain_States.json', 'w') as fp:
+with open('domain_Counties.json', 'w') as fp:
    json.dump(data, fp)
 
 
