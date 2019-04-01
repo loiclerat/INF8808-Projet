@@ -46,6 +46,7 @@ export class SlopeChartComponent implements OnInit {
 
   private static readonly nbCitiesToDisplay = 50;
 
+  public loaded = false;
   private data: Incident[];
   private citiesPopulationData: City[];
   private dataByCityManyIncidents: DataByCity[];
@@ -82,6 +83,7 @@ export class SlopeChartComponent implements OnInit {
   private finishLoading() {
     if (this.citiesPopulationData && this.data) {
       this.preprocessing();
+      this.loaded = true;
       this.initialization();
     }
   }

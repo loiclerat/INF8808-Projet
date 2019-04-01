@@ -8,7 +8,8 @@
   <h3>
     Villes ayant le plus et le moins d'incidents par habitants
   </h3>
-  <div>
+  <div class="loader" [ngClass]="{'hidden': loaded}"></div>
+  <div [ngClass]="{'hidden': !loaded}">
     <svg id="slope-chart-1"></svg>
     <svg id="slope-chart-2"></svg>
   </div>
