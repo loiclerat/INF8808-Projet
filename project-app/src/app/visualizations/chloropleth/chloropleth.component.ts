@@ -34,7 +34,7 @@ export class ChloroplethComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.currentYear = "2013";
+    this.currentYear = "2014";
 
     this.svg = d3
       .select("#map")
@@ -54,9 +54,10 @@ export class ChloroplethComponent implements OnInit {
     //color
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
     this.statesMap.forEach((state: any) => {
-      //let stateName = this.countiesIdNames[state.id];
+      let stateName = this.statesIdNames[state.id];
+      let result = stateName in this.dataSatesIncidents[this.currentYear] ? this.dataSatesIncidents[this.currentYear][stateName] : 0;
       state.properties = {
-        value: 1//this.dataCountiesIncidents[this.currentYear][stateName]
+        value: result
       };
     });
     this.buildForStates();
@@ -69,9 +70,10 @@ export class ChloroplethComponent implements OnInit {
       this.us.objects.counties
     ).features;
     this.countiesMap.forEach((county: any) => {
-      //let countyName = this.countiesIdNames[county.id];
+      let countyName = this.countiesIdNames[county.id];
+      let result = countyName in this.dataCountiesIncidents[this.currentYear] ? this.dataCountiesIncidents[this.currentYear][countyName] : 0;
       county.properties = {
-        value: 1//this.dataCountiesIncidents[this.currentYear][countyName]
+        value: result
       };
     });
   }
