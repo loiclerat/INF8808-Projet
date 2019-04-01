@@ -2,10 +2,13 @@ import csv
 import io
 import json
 
+import requests
+
 file_name = "gun-violence-data_01-2013_03-2018.csv"
 extracted_results = []
 columns = []
 isHeader = True
+counter = 0
 
 with open(file_name, 'r') as csvFile:
     reader = csv.reader(csvFile)
@@ -21,7 +24,12 @@ with open(file_name, 'r') as csvFile:
             if row[i] is None or str(row[i]) == "" or "2018" in str(row[i]) or "2013" in str(row[i]):
                 can_add = False
 
+        counter += 1
         if can_add:
+            lat = row[3]
+            lon = row[4]
+            row[2] = requests.get("https://geo.fcc.gov/api/census/area?lat={}&lon={}&format=json".format(lat, lon)).json()["results"][0]["county_name"]
+            print("Request {} with {} and {}".format(counter, lat, lon))
             extracted_results.append(row)
 csvFile.close()
 

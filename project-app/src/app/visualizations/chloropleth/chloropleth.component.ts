@@ -9,18 +9,19 @@ import * as topoJson from "topojson";
   styleUrls: ["./chloropleth.component.css"]
 })
 export class ChloroplethComponent implements OnInit {
-  private svg: any;
-  private path: d3.GeoPath<any, d3.GeoPermissibleObjects>;
+
   private width = 960;
   private height = 1160;
+
   private us: any;
+  private svg: any;
+  private path: d3.GeoPath<any, d3.GeoPermissibleObjects>;
   private statesIncidentes: any[] = [];
-  statesMap: any;
-  countiesMap: any;
+  private statesMap: any;
+  private countiesMap: any;
 
   private statesIdNames;
   private countiesIdNames;
-
   private dataSatesIncidents;
   private dataCountiesIncidents;
 
@@ -34,7 +35,7 @@ export class ChloroplethComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.currentYear = "2014";
+    this.currentYear = "2016";
 
     this.svg = d3
       .select("#map")
@@ -63,7 +64,7 @@ export class ChloroplethComponent implements OnInit {
     this.buildForStates();
 
     //counties
-    this.statesIdNames = await d3.json("./../../../../extract/counties-id.json");
+    this.countiesIdNames = await d3.json("./../../../../extract/counties-id.json");
     this.dataCountiesIncidents = await d3.json("./../../../../extract/domain_Counties.json");
     this.countiesMap = topoJson.feature(
       this.us,
@@ -93,7 +94,7 @@ export class ChloroplethComponent implements OnInit {
       .append("path")
       .attr("d", this.path)
       .style("fill", function(d) {
-        return d3.interpolateReds(d.properties.value);
+        return d3.interpolatePurples(d.properties.value);
       });
   }
 
@@ -117,7 +118,7 @@ export class ChloroplethComponent implements OnInit {
       .append("path")
       .attr("d", this.path)
       .style("fill", function(d) {
-        return d3.interpolateReds(d.properties.value);
+        return d3.interpolatePurples(d.properties.value);
       });
   }
 
