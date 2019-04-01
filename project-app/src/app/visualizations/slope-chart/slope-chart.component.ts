@@ -174,11 +174,11 @@ export class SlopeChartComponent implements OnInit {
     const tip = d3Tip().attr("class", "d3-tip");
 
     tip.html((d: DataByCity) => {
-      return `Ville: <b> ${d.cityName} </b> <br>
+      return `<div>Ville: <b> ${d.cityName} </b> <br>
                 Etat: <b> ${d.stateName} </b> <br>
                 Population: <b> ${d.population} </b> <br>
                 Incidents (2014): <b> ${d.incidentNumber2014} </b> <br>
-                Incidents (2017): <b> ${d.incidentNumber2017} </b>`;
+                Incidents (2017): <b> ${d.incidentNumber2017} </b> </div>`;
     });
 
     // Create slope groups

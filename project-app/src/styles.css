@@ -1,6 +1,8 @@
 * {
   color: #003182;
   font-family: Verdana;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .title {
@@ -45,9 +47,12 @@ circle {
   line-height: 1.2;
   padding: 12px;
   border-radius: 2px;
-  color: #fff;
   background: rgba(0, 0, 0, 0.7);
   font-size: 13px;
+}
+
+.d3-tip div, .d3-tip b {
+  color: #fff;
 }
 
 .d3-tip:after {
