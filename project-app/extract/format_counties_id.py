@@ -20,7 +20,11 @@ with open(file_name, 'r') as csvFile:
 	reader = csv.reader(csvFile)
 	
 	for row in reader:
-		counties[row[0]] = row[1]
+		if len(row[0]) == 4:
+			id = "0" + row[0]
+			counties[id] = row[1]
+		else:
+			counties[row[0]] = row[1]
 		
 		
 csvFile.close()
