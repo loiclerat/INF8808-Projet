@@ -1,9 +1,13 @@
 export interface DataByCity {
   cityName: string;
-  // TODO : do we really need this one ?
   stateName: string;
   incidentRatio2014: number;
   incidentRatio2017: number;
+  population: number;
+  incidentNumber2014: number;
+  incidentNumber2017: number;
+  yLeftPosition: number;
+  yRightPosition: number;
 }
 
 export interface City {

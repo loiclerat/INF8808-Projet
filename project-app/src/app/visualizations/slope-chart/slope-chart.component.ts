@@ -1,5 +1,17 @@
+
+// TODO:
+// - tooltip
+// - légende : ticks (incidents par 1000 habitants), top100/bottom100
+// - Improve style
+// - Modif données pour essayer d'avoir les grandes villes manquantes
+// - Optimization ?
+// - Highlight grandes villes ?
+// - Test relax meilleur ?
+
 import { Component, OnInit } from "@angular/core";
 import * as d3 from "d3";
+import d3Tip from "d3-tip";
+import { max } from "d3";
 
 import { DataByCity, City, Incident, IncidentJson } from "../../data-by-city.model";
 
@@ -9,9 +21,35 @@ import { DataByCity, City, Incident, IncidentJson } from "../../data-by-city.mod
   styleUrls: ["./slope-chart.component.css"]
 })
 export class SlopeChartComponent implements OnInit {
+  // Config stuff
+  private static readonly margin = { top: 80, right: 160, bottom: 40, left: 160 };
+
+  private static readonly width = 550 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
+  private static readonly height = 4000 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
+
+  private static readonly config = {
+    xOffset: 0,
+    yOffset: 0,
+    width: SlopeChartComponent.width,
+    height: SlopeChartComponent.height,
+    labelPositioning: {
+      alpha: 0.7,
+      spacing: 16
+    },
+    leftTitle: "2014",
+    rightTitle: "2017",
+    labelGroupOffset: 5,
+    labelKeyOffset: 15,
+    radius: 4,
+    unfocusOpacity: 0.3
+  };
+
+  private static readonly nbCitiesToDisplay = 50;
+
   private data: Incident[];
-  private citiesData: City[];
-  private dataByCity: DataByCity[];
+  private citiesPopulationData: City[];
+  private dataByCityManyIncidents: DataByCity[];
+  private dataByCityFewIncidents: DataByCity[];
 
   ngOnInit() {
     const parseTime = d3.timeParse("%Y-%m-%d");
@@ -36,20 +74,20 @@ export class SlopeChartComponent implements OnInit {
 
 
     d3.json("../../citypop.json").then((data: City[]) => {
-      this.citiesData = data;
+      this.citiesPopulationData = data;
       this.finishLoading();
     });
   }
 
   private finishLoading() {
-    if (this.citiesData && this.data) {
+    if (this.citiesPopulationData && this.data) {
       this.preprocessing();
       this.initialization();
     }
   }
 
   private preprocessing() {
-    this.dataByCity = [];
+    const dataByCity = [];
 
     this.data.forEach((incident: Incident) => {
       const year = incident.date.getFullYear();
@@ -60,280 +98,235 @@ export class SlopeChartComponent implements OnInit {
       const cleanCityName: string = incident.city_or_county.split(" (", 1)[0];
 
       // If the city exist in our city population dataset
-      if (this.citiesData.find(d => d.city === cleanCityName)) {
-        let city: DataByCity = this.dataByCity.find(d => d.cityName === cleanCityName);
+      let cityFromPopulationDataset: City;
+      if (cityFromPopulationDataset = this.citiesPopulationData.find(d => d.city === cleanCityName && d.state === incident.state)) {
+        let city = dataByCity.find(d => d.cityName === cleanCityName && d.stateName === incident.state);
         if (!city) {
           // Create a new DataByCity if it does not exist yet
-          city = { cityName: cleanCityName, stateName: incident.state, incidentRatio2014: 0, incidentRatio2017: 0 };
-          this.dataByCity.push(city);
+          city = {
+            cityName: cleanCityName,
+            stateName: incident.state,
+            incidentRatio2014: 0,
+            incidentRatio2017: 0,
+            population: cityFromPopulationDataset.pop,
+            incidentNumber2014: 0,
+            incidentNumber2017: 0,
+            yLeftPosition: 0,
+            yRightPosition: 0
+          };
+          dataByCity.push(city);
         }
 
         // Update incident number
         if (year === 2014) {
-          city.incidentRatio2014++;
+          city.incidentNumber2014++;
         } else {
-          city.incidentRatio2017++;
+          city.incidentNumber2017++;
         }
       }
     });
 
+    dataByCity.forEach((city: DataByCity) => {
+      city.incidentRatio2014 = city.incidentNumber2014 / city.population;
+      city.incidentRatio2017 = city.incidentNumber2017 / city.population;
+    });
+
+    // On trie dans l'ordre croissant du nomber d'incidents en 2014
+    dataByCity.sort((a, b) => a.incidentNumber2014 - b.incidentNumber2014);
+
+    // Populate sub arrays
+    this.dataByCityFewIncidents = dataByCity.slice(0, SlopeChartComponent.nbCitiesToDisplay);
+    this.dataByCityManyIncidents = dataByCity.slice(dataByCity.length - SlopeChartComponent.nbCitiesToDisplay, dataByCity.length);
+
     this.data = []; // free up memory
-    this.citiesData = []; // free up memory
+    this.citiesPopulationData = []; // free up memory
   }
 
-  // D3 examples : http://christopheviau.com/d3list/
-  // https://bl.ocks.org/tlfrd/042b2318c8767bad7a485098fbf760fc
   private initialization() {
-    const margin = { top: 100, right: 275, bottom: 40, left: 275 };
+    this.createSlopeChart(this.dataByCityManyIncidents, "slope-chart-1");
+    this.createSlopeChart(this.dataByCityFewIncidents, "slope-chart-2");
+  }
 
-    const width = 960 - margin.left - margin.right;
-    const height = 2000 - margin.top - margin.bottom;
-
-    const svg = d3.select("svg#slope-chart")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+  private createSlopeChart(data: DataByCity[], svgId: string) {
+    // Create main svg
+    const svg = d3.select("#" + svgId)
+      .attr("width", SlopeChartComponent.width + SlopeChartComponent.margin.left + SlopeChartComponent.margin.right)
+      .attr("height", SlopeChartComponent.height + SlopeChartComponent.margin.top + SlopeChartComponent.margin.bottom)
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", "translate(" + SlopeChartComponent.margin.left + "," + SlopeChartComponent.margin.top + ")");
 
-    const y1 = d3.scaleLinear()
-      .range([height, 0]);
+    // Create Y axis scale
+    const yScale = d3.scaleLinear()
+      .range([SlopeChartComponent.height, 0]);
 
-    const config = {
-      xOffset: 0,
-      yOffset: 0,
-      width: width,
-      height: height,
-      labelPositioning: {
-        alpha: 0.5,
-        spacing: 18
-      },
-      leftTitle: "2014",
-      rightTitle: "2017",
-      labelGroupOffset: 5,
-      labelKeyOffset: 50,
-      radius: 6,
-      // Reduce this to turn on detail-on-hover version
-      unfocusOpacity: 0.3
-    };
-
-    function drawSlopeGraph(cfg, data, yScale, leftYAccessor, rightYAccessor) {
-      const slopeGraph = svg.append("g")
-        .attr("class", "slope-graph")
-        .attr("transform", "translate(" + [cfg.xOffset, cfg.yOffset] + ")");
-    }
-
-    // Combine ratios into a single array
-    // const ratios = [];
-    // data.pay_ratios_2012_13.forEach(function(d) {
-    //   d.year = "2012-2013";
-    //   ratios.push(d);
-    // });
-    // data.pay_ratios_2015_16.forEach(function(d) {
-    //   d.year = "2015-2016";
-    //   ratios.push(d);
-    // });
-
-    // Nest by university
-    // const nestedByName = d3.nest()
-    // 	.key(function(d) { return d.name })
-    // 	.entries(ratios);
-
-    // Filter out those that only have data for a single year
-    // nestedByName = nestedByName.filter(function(d) {
-    //   return d.values.length > 1;
-    // });
-
-    // const y1Min = d3.min(nestedByName, function(d) {
-    //   const ratio1 = d.values[0].max / d.values[0].min;
-    //   const ratio2 = d.values[1].max / d.values[1].min;
-
-    //   return Math.min(ratio1, ratio2);
-    // });
-
-    // const y1Max = d3.max(nestedByName, function(d) {
-    //   const ratio1 = d.values[0].max / d.values[0].min;
-    //   const ratio2 = d.values[1].max / d.values[1].min;
-
-    //   return Math.max(ratio1, ratio2);
-    // });
-
-
-    const y1Min = d3.min(this.dataByCity, function (d) {
+    // Calculate y domain for ratios
+    const y1Min = d3.min(data, function (d) {
       return Math.min(d.incidentRatio2014, d.incidentRatio2017);
     });
 
-    const y1Max = d3.max(this.dataByCity, function (d) {
+    const y1Max = d3.max(data, function (d) {
       return Math.max(d.incidentRatio2014, d.incidentRatio2017);
     });
 
+    yScale.domain([y1Min, y1Max]);
 
-    // Calculate y domain for ratios
-    y1.domain([y1Min, y1Max]);
+    // Create tip
+    const tip = d3Tip().attr("class", "d3-tip");
 
-    const yScale = y1;
+    tip.html((d: DataByCity) => {
+      return `Ville: <b> ${d.cityName} </b> <br>
+                Etat: <b> ${d.stateName} </b> <br>
+                Population: <b> ${d.population} </b> <br>
+                Incidents (2014): <b> ${d.incidentNumber2014} </b> <br>
+                Incidents (2017): <b> ${d.incidentNumber2017} </b>`;
+    });
 
-    // const voronoi = d3.voronoi()
-    //   .x(d => d.year == "2012-2013" ? 0 : width)
-    //   .y(d => yScale(d.max / d.min))
-    //   .extent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
-
-    const borderLines = svg.append("g")
-      .attr("class", "border-lines");
-    borderLines.append("line")
-      .attr("x1", 0).attr("y1", 0)
-      .attr("x2", 0).attr("y2", config.height);
-    borderLines.append("line")
-      .attr("x1", width).attr("y1", 0)
-      .attr("x2", width).attr("y2", config.height);
-
+    // Create slope groups
     const slopeGroups = svg.append("g")
       .selectAll("g")
-      .data(this.dataByCity)
-      .enter().append("g")
-      .attr("class", "slope-group");
-
-    const slopeLines = slopeGroups.append("line")
-      .attr("class", "slope-line")
-      .attr("x1", 0)
-      .attr("y1", function (d) {
-        return y1(d.incidentRatio2014);
+      .data(data)
+      .enter()
+      .append("g")
+      .attr("class", "slope-group")
+      .attr("opacity", SlopeChartComponent.config.unfocusOpacity)
+      .on("mouseover", function (d) {
+        d3.select(this).attr("opacity", 1);
+        tip.show(d, this)
+          .style("left", (d3.event.pageX - 72) + "px")
+          .style("top", (d3.event.pageY - 130) + "px");
       })
-      .attr("x2", config.width)
-      .attr("y2", function (d) {
-        return y1(d.incidentRatio2017);
+      .on("mouseout", function (d) {
+        d3.select(this).attr("opacity", SlopeChartComponent.config.unfocusOpacity);
+        tip.hide(d);
       });
 
-    const leftSlopeCircle = slopeGroups.append("circle")
-      .attr("r", config.radius)
-      .attr("cy", d => y1(d.incidentRatio2014));
+    slopeGroups.call(tip);
 
-    const leftSlopeLabels = slopeGroups.append("g")
-      .attr("class", "slope-label-left");
-    // .each(function(d) {
-    //   d.xLeftPosition = -config.labelGroupOffset;
-    //   d.yLeftPosition = y1(d.incidentRatio2014);
-    // })
+    // Left groups
+    const leftSlopeGroups = slopeGroups.append("g")
+      .attr("class", "slope-groups-left")
+      .each(d => { d.yLeftPosition = yScale(d.incidentRatio2014); });
 
-    leftSlopeLabels.append("text")
-      .attr("class", "label-figure")
-      .attr("x", -config.labelGroupOffset)
-      .attr("y", d => y1(d.incidentRatio2014))
-      .attr("dx", -10)
-      .attr("dy", 3)
-      .attr("text-anchor", "end")
-      .text(d => (d.incidentRatio2014).toPrecision(3));
+    // Right groups
+    const rightSlopeGroups = slopeGroups.append("g")
+      .attr("class", "slope-groups-left")
+      .each(d => { d.yRightPosition = yScale(d.incidentRatio2017); });
 
-    leftSlopeLabels.append("text")
-      .attr("x", -config.labelGroupOffset)
-      .attr("y", d => y1(d.incidentRatio2014))
-      .attr("dx", -config.labelKeyOffset)
+    // Relax y positions to avoid labels and circles overlapping
+    const heightAdjustLeft = this.relax(leftSlopeGroups, "yLeftPosition");
+    const heightAdjustRight = this.relax(rightSlopeGroups, "yRightPosition");
+
+    // Maximum height value might need a little adjustment after relax
+    const heightAdjustFinal = max([heightAdjustLeft, heightAdjustRight]);
+
+    // Draw left circles
+    leftSlopeGroups.append("circle")
+      .attr("r", SlopeChartComponent.config.radius)
+      .attr("cy", d => d.yLeftPosition);
+
+    // Draw left labels
+    leftSlopeGroups.append("g")
+      .attr("class", "slope-label-left")
+      .append("text")
+      .attr("x", -SlopeChartComponent.config.labelGroupOffset)
+      .attr("y", d => d.yLeftPosition)
+      .attr("dx", -SlopeChartComponent.config.labelKeyOffset)
       .attr("dy", 3)
       .attr("text-anchor", "end")
       .text(d => d.cityName);
 
-    const rightSlopeCircle = slopeGroups.append("circle")
-      .attr("r", config.radius)
-      .attr("cx", config.width)
-      .attr("cy", d => y1(d.incidentRatio2017));
+    // Draw right circles
+    rightSlopeGroups.append("circle")
+      .attr("r", SlopeChartComponent.config.radius)
+      .attr("cx", SlopeChartComponent.config.width)
+      .attr("cy", d => d.yRightPosition);
 
-    const rightSlopeLabels = slopeGroups.append("g")
-      .attr("class", "slope-label-right");
-    // .each(function(d) {
-    //   d.xRightPosition = width + config.labelGroupOffset;
-    //   d.yRightPosition = y1(d.values[1].max / d.values[1].min);
-    // })
-
-    rightSlopeLabels.append("text")
-      .attr("class", "label-figure")
-      .attr("x", width + config.labelGroupOffset)
-      .attr("y", d => y1(d.incidentRatio2017))
-      .attr("dx", 10)
-      .attr("dy", 3)
-      .attr("text-anchor", "start")
-      .text(d => (d.incidentRatio2017).toPrecision(3));
-
-    rightSlopeLabels.append("text")
-      .attr("x", width + config.labelGroupOffset)
-      .attr("y", d => y1(d.incidentRatio2017))
-      .attr("dx", config.labelKeyOffset)
+    // Draw right labels
+    rightSlopeGroups.append("g")
+      .attr("class", "slope-label-right")
+      .append("text")
+      .attr("x", SlopeChartComponent.width + SlopeChartComponent.config.labelGroupOffset)
+      .attr("y", d => d.yRightPosition)
+      .attr("dx", SlopeChartComponent.config.labelKeyOffset)
       .attr("dy", 3)
       .attr("text-anchor", "start")
       .text(d => d.cityName);
 
+    // Draw titles
     const titles = svg.append("g")
       .attr("class", "title");
 
+    // Left (2014)
     titles.append("text")
       .attr("text-anchor", "end")
       .attr("dx", -10)
-      .attr("dy", -margin.top / 2)
-      .text(config.leftTitle);
+      .attr("dy", -SlopeChartComponent.margin.top / 2)
+      .text(SlopeChartComponent.config.leftTitle);
 
+    // Left (2017)
     titles.append("text")
-      .attr("x", config.width)
+      .attr("x", SlopeChartComponent.config.width)
       .attr("dx", 10)
-      .attr("dy", -margin.top / 2)
-      .text(config.rightTitle);
+      .attr("dy", -SlopeChartComponent.margin.top / 2)
+      .text(SlopeChartComponent.config.rightTitle);
 
-    // this.relax(leftSlopeLabels, "yLeftPosition");
-    // leftSlopeLabels.selectAll("text")
-    // 	.attr("y", ????);
+    // Draw border lines
+    const borderLines = svg.append("g")
+      .attr("class", "border-lines");
 
-    // this.relax(rightSlopeLabels, "yRightPosition");
-    // rightSlopeLabels.selectAll("text")
-    // 	.attr("y", ????);
+    borderLines.append("line")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", SlopeChartComponent.config.height + heightAdjustFinal);
 
-    // d3.selectAll(".slope-group")
-    // 	.attr("opacity", config.unfocusOpacity);
+    borderLines.append("line")
+      .attr("x1", SlopeChartComponent.width).attr("y1", 0)
+      .attr("x2", SlopeChartComponent.width).attr("y2", SlopeChartComponent.config.height + heightAdjustFinal);
 
-    // const voronoiGroup = svg.append("g")
-    // 	.attr("class", "voronoi");
-
-    //   voronoiGroup.selectAll("path")
-    //   	.data(voronoi.polygons(d3.merge(nestedByName.map(d => d.values))))
-    //   	.enter().append("path")
-    //   		.attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; })
-    //   		.on("mouseover", mouseover)
-    //   		.on("mouseout", mouseout);
-    // });
-
-    // function mouseover(d) {
-    //   d3.select(d.data.group).attr("opacity", 1);
-    // }
-
-    // function mouseout(d) {
-    //   d3.selectAll(".slope-group")
-    //   	.attr("opacity", config.unfocusOpacity);
-    // }
-
+    // Draw slope lines
+    slopeGroups.append("line")
+      .attr("class", "slope-line")
+      .attr("x1", 0)
+      .attr("y1", d => d.yLeftPosition)
+      .attr("x2", SlopeChartComponent.config.width)
+      .attr("y2", d => d.yRightPosition);
   }
 
-  // Function to reposition an array selection of labels (in the y-axis)
-  // private relax(labels, position) {
-  //   const again = false;
-  //   labels.each(function (d, i) {
-  //     const a = this;
-  //     const da = d3.select(a).datum();
-  //     const y1 = da[position];
-  //     labels.each(function (d, j) {
-  //       const  b = this;
-  //       if (a == b) return;
-  //       const db = d3.select(b).datum();
-  //       const y2 = db[position];
-  //       const deltaY = y1 - y2;
+  // Function to reposition an array selection of slope groups (in the y-axis)
+  private relax(slopeGroups: d3.Selection<SVGGElement, DataByCity, SVGGElement, {}>, position: string) {
+    let heightAdjust = 0;
 
-  //       if (Math.abs(deltaY) > config.labelPositioning.spacing) return;
+    let again: boolean;
+    do {
+      again = false;
 
-  //       again = true;
-  //       const sign = deltaY > 0 ? 1 : -1;
-  //       const adjust = sign * config.labelPositioning.alpha;
-  //       da[position] = +y1 + adjust;
-  //       db[position] = +y2 - adjust;
+      slopeGroups.each((d1, i) => {
+        const y1 = d1[position];
 
-  //       if (again) {
-  //        this.relax(labels, position);
-  //       }
-  //     })
-  //   })
-  // }
+        slopeGroups.each((d2, j) => {
+          if (d1.cityName === d2.cityName && d1.stateName === d2.stateName) {
+            return;
+          }
+
+          const y2 = d2[position];
+          const deltaY = y1 - y2;
+
+          // If enough space, dont't need to relax
+          if (Math.abs(deltaY) > SlopeChartComponent.config.labelPositioning.spacing) {
+            return;
+          }
+
+          again = true;
+          const sign = deltaY > 0 ? 1 : -1;
+          const adjust = sign * SlopeChartComponent.config.labelPositioning.alpha;
+          d1[position] = y1 + adjust;
+          d2[position] = y2 - adjust;
+
+          // We might need to adjust the maximum height value
+          heightAdjust += d1[position] > SlopeChartComponent.config.height + heightAdjust ? adjust : 0;
+        });
+      });
+    } while (again);
+
+    return heightAdjust;
+  }
 }

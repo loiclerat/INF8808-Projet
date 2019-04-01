@@ -1,37 +1,12 @@
-.title {
-  font-size: 18px;
-  font-weight: 700;
+.container {
+  text-align: center;
+  width: 1100px;
 }
 
-.slope-line {
-  stroke: #333;
-  stroke-width: 2px;
-  stroke-linecap: round;
+p {
+  margin: 0px 60px;
 }
 
-.slope-label-left,
-.slope-label-right {
-  font-size: 16px;
-  cursor: default;
-  font-weight: 400;
-}
-
-.label-figure {
-  font-weight: 700;
-}
-
-.border-lines {
-  stroke: #999;
-  stroke-width: 1px;
-}
-
-.voronoi path {
-  fill: none;
-  pointer-events: all;
-}
-
-circle {
-  fill: white;
-  stroke: black;
-  stroke-width: 2px;
+h3 {
+  margin-top: 50px;
 }
