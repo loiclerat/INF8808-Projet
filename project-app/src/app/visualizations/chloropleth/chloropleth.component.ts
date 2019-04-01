@@ -18,8 +18,8 @@ export class ChloroplethComponent implements OnInit {
   private type: MapType;
   private svg: any;
   private path: d3.GeoPath<any, d3.GeoPermissibleObjects>;
-  private width = 960;
-  private height = 1160;
+  private width = 1000;
+  private height = 700;
   private us: any;
   private statesIncidentes: any[] = []; // TODO C'est quoi???
   private statesMap: any;
@@ -80,7 +80,7 @@ export class ChloroplethComponent implements OnInit {
 
   private getIndexMatch(states: any[], stateId: string) {
     for (let i = 0; i < states.length; i++) {
-      states[i].state; // TOD heu????
+      states[i].state; // TODO heu????
     }
   }
 
