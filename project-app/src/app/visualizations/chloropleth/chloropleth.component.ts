@@ -9,7 +9,6 @@ import * as topoJson from "topojson";
   styleUrls: ["./chloropleth.component.css"]
 })
 export class ChloroplethComponent implements OnInit {
-  private type: string;
   private svg: any;
   private path: d3.GeoPath<any, d3.GeoPermissibleObjects>;
   private width = 960;
@@ -19,6 +18,14 @@ export class ChloroplethComponent implements OnInit {
   statesMap: any;
   countiesMap: any;
 
+  private statesIdNames;
+  private countiesIdNames;
+
+  private dataSatesIncidents;
+  private dataCountiesIncidents;
+
+  private currentYear : string;
+
   constructor() {
     this.statesIncidentes.push({
       value: 1000,
@@ -27,32 +34,44 @@ export class ChloroplethComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.type = "states";
+    this.currentYear = "2013";
+
     this.svg = d3
-      .select("body")
+      .select("#map")
       .append("svg")
       .attr("width", this.width)
       .attr("height", this.height);
+
     this.path = d3.geoPath();
     this.us = await d3.json("https://d3js.org/us-10m.v1.json");
-    this.svg.append("g").attr("class", "states");
+    //this.svg.append("g").attr("class", "states");
+
+    //load neccessary data
+    this.statesIdNames = await d3.json("./../../../../extract/states-id.json");
+    this.dataSatesIncidents = await d3.json("./../../../../extract/result_States.json");
+
 
     //color
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
     this.statesMap.forEach((state: any) => {
+      //let stateName = this.countiesIdNames[state.id];
       state.properties = {
-        value: Math.random()
+        value: 1//this.dataCountiesIncidents[this.currentYear][stateName]
       };
     });
     this.buildForStates();
 
+    //counties
+    this.statesIdNames = await d3.json("./../../../../extract/counties-id.json");
+    this.dataCountiesIncidents = await d3.json("./../../../../extract/result_Counties.json");
     this.countiesMap = topoJson.feature(
       this.us,
       this.us.objects.counties
     ).features;
     this.countiesMap.forEach((county: any) => {
+      //let countyName = this.countiesIdNames[county.id];
       county.properties = {
-        value: Math.random()
+        value: 1//this.dataCountiesIncidents[this.currentYear][countyName]
       };
     });
   }
@@ -60,10 +79,11 @@ export class ChloroplethComponent implements OnInit {
   buildForCounties() {
     this.svg.remove();
     this.svg = d3
-      .select("body")
+      .select("#map")
       .append("svg")
       .attr("width", this.width)
       .attr("height", this.height);
+
     this.svg
       .selectAll("path")
       .data(this.countiesMap)
@@ -84,7 +104,7 @@ export class ChloroplethComponent implements OnInit {
   buildForStates() {
     this.svg.remove();
     this.svg = d3
-      .select("body")
+      .select("#map")
       .append("svg")
       .attr("width", this.width)
       .attr("height", this.height);
@@ -100,13 +120,6 @@ export class ChloroplethComponent implements OnInit {
   }
 
   change() {
-    console.log("here");
-    if (this.type === "counties") {
-      this.type = "states";
-      this.buildForStates();
-    } else {
-      this.type = "counties";
-      this.buildForCounties();
-    }
+    this.buildForCounties();
   }
 }
