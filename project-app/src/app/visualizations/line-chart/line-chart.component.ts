@@ -43,7 +43,7 @@ export class LineChartComponent implements OnInit {
       .tickValues(tickValues);
     const yAxis = d3.axisLeft(yScale);
 
-    const svg = d3.select("svg")
+    const svg = d3.select("svg#line-chart")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom);
 
