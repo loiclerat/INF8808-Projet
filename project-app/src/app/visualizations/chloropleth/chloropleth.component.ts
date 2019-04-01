@@ -48,7 +48,7 @@ export class ChloroplethComponent implements OnInit {
 
     //load neccessary data
     this.statesIdNames = await d3.json("./../../../../extract/states-id.json");
-    this.dataSatesIncidents = await d3.json("./../../../../extract/result_States.json");
+    this.dataSatesIncidents = await d3.json("./../../../../extract/domain_States.json");
 
 
     //color
@@ -64,7 +64,7 @@ export class ChloroplethComponent implements OnInit {
 
     //counties
     this.statesIdNames = await d3.json("./../../../../extract/counties-id.json");
-    this.dataCountiesIncidents = await d3.json("./../../../../extract/result_Counties.json");
+    this.dataCountiesIncidents = await d3.json("./../../../../extract/domain_Counties.json");
     this.countiesMap = topoJson.feature(
       this.us,
       this.us.objects.counties
