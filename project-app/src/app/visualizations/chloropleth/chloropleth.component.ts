@@ -102,14 +102,8 @@ export class ChloroplethComponent implements OnInit {
       .append("path")
       .attr("d", this.path)
       .style("fill", function(d) {
-        return d3.interpolatePurples(d.properties.value);
+        return d3.interpolatePuBu(d.properties.value);
       });
-  }
-
-  private getIndexMatch(states: any[], stateId: string) {
-    for (let i = 0; i < states.length; i++) {
-      states[i].state; // TODO heu????
-    }
   }
 
   buildForStates() {
@@ -126,7 +120,7 @@ export class ChloroplethComponent implements OnInit {
       .append("path")
       .attr("d", this.path)
       .style("fill", function(d) {
-        return d3.interpolatePurples(d.properties.value);
+        return d3.interpolatePuBu(d.properties.value);
       });
   }
 
