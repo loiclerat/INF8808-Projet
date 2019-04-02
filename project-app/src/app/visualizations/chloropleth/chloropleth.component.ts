@@ -1,7 +1,13 @@
 import { Component, OnInit } from "@angular/core";
 import * as d3 from "d3";
 import * as topoJson from "topojson";
-//import statesData from "./utilis";
+
+// import statesData from "./utilis";
+
+enum MapType {
+  State = 0,
+  County
+}
 
 @Component({
   selector: "app-chloropleth",
@@ -11,7 +17,7 @@ import * as topoJson from "topojson";
 export class ChloroplethComponent implements OnInit {
 
   private width = 960;
-  private height = 1160;
+  private height = 700;
 
   private us: any;
   private svg: any;
@@ -52,7 +58,7 @@ export class ChloroplethComponent implements OnInit {
     this.dataSatesIncidents = await d3.json("./../../../../extract/domain_States.json");
 
 
-    //color
+    // color
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
     this.statesMap.forEach((state: any) => {
       let stateName = this.statesIdNames[state.id];
@@ -61,6 +67,7 @@ export class ChloroplethComponent implements OnInit {
         value: result
       };
     });
+
     this.buildForStates();
 
     //counties
@@ -70,6 +77,7 @@ export class ChloroplethComponent implements OnInit {
       this.us,
       this.us.objects.counties
     ).features;
+
     this.countiesMap.forEach((county: any) => {
       let countyName = this.countiesIdNames[county.id];
       let result = countyName in this.dataCountiesIncidents[this.currentYear] ? this.dataCountiesIncidents[this.currentYear][countyName] : 0;
@@ -98,9 +106,9 @@ export class ChloroplethComponent implements OnInit {
       });
   }
 
-  getIndexMatch(states: any[], stateId: string) {
+  private getIndexMatch(states: any[], stateId: string) {
     for (let i = 0; i < states.length; i++) {
-      states[i].state;
+      states[i].state; // TODO heu????
     }
   }
 

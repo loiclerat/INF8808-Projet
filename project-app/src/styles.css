@@ -1,1 +1,71 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  color: #003182;
+  font-family: Verdana;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.slope-line {
+  stroke: #333;
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
+
+.slope-label-left,
+.slope-label-right {
+  font-size: 14px;
+  cursor: default;
+  font-weight: 400;
+}
+
+.label-figure {
+  font-weight: 700;
+}
+
+.border-lines {
+  stroke: #999;
+  stroke-width: 1px;
+}
+
+.voronoi path {
+  fill: none;
+  pointer-events: all;
+}
+
+circle {
+  fill: white;
+  stroke: black;
+  stroke-width: 2px;
+}
+
+.d3-tip {
+  line-height: 1.2;
+  padding: 12px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.7);
+  font-size: 13px;
+}
+
+.d3-tip div, .d3-tip b {
+  color: #fff;
+}
+
+.d3-tip:after {
+  display: inline;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin: -1px 0 0 0;
+  box-sizing: border-box;
+  font-size: 10px;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}

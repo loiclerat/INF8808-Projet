@@ -1,0 +1,16 @@
+<div class="container">
+  <h1>
+    Quelles villes ont le plus et le moins d’incidents par habitants?
+  </h1>
+  <p>
+    Ex : ...
+  </p>
+  <h3>
+    Villes ayant le plus et le moins d'incidents par habitants
+  </h3>
+  <div class="loader" [ngClass]="{'hidden': loaded}"></div>
+  <div [ngClass]="{'hidden': !loaded}">
+    <svg id="slope-chart-1"></svg>
+    <svg id="slope-chart-2"></svg>
+  </div>
+</div>

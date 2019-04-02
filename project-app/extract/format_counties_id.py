@@ -8,7 +8,6 @@ state_years_dict = dict()
 
 county_years_dict = dict()
 
-
 file_name = "us-counties-formatted.csv"
 extracted_results = []
 columns = []
@@ -25,7 +24,6 @@ with open(file_name, 'r') as csvFile:
 			counties[id] = row[1]
 		else:
 			counties[row[0]] = row[1]
-		
 		
 csvFile.close()
 print(counties)

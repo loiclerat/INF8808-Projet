@@ -8,7 +8,6 @@ state_years_dict = dict()
 
 county_years_dict = dict()
 
-
 file_name = "gun-violence-data_01-2013_03-2018.csv"
 extracted_results = []
 columns = []
@@ -43,9 +42,7 @@ for val in extracted_results:
 		county_years_dict[date[:4]] = dict()
 		county_years_dict[date[:4]][val[2]] = 1
 		
-		
 with open('result_Counties.json', 'w') as fp:
     json.dump(county_years_dict, fp)
-
 
 #county_years_dict[date[:4]]['county']
