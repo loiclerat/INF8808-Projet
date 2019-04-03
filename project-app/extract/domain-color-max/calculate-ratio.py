@@ -3,7 +3,7 @@ import io
 import json
 
 
-file_name = "domain_Counties.json"
+file_name = "domain_States.json"
 
 
 with open(file_name, 'r') as csvFile:
@@ -17,7 +17,7 @@ for year in data:
 	
 
 		
-with open('domain_Counties.json', 'w') as fp:
+with open('domain_States.json', 'w') as fp:
    json.dump(data, fp)
 
 

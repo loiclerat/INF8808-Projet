@@ -54,8 +54,8 @@ export class ChloroplethComponent implements OnInit {
     //this.svg.append("g").attr("class", "states");
 
     //load neccessary data
-    this.statesIdNames = await d3.json("./../../../../extract/states-id.json");
-    this.dataSatesIncidents = await d3.json("./../../../../extract/domain_States.json");
+    this.statesIdNames = await d3.json("./../../../../extract/id-formatting/states-id.json");
+    this.dataSatesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_States.json");
 
 
     // color
@@ -71,8 +71,8 @@ export class ChloroplethComponent implements OnInit {
     this.buildForStates();
 
     //counties
-    this.countiesIdNames = await d3.json("./../../../../extract/counties-id.json");
-    this.dataCountiesIncidents = await d3.json("./../../../../extract/domain_Counties.json");
+    this.countiesIdNames = await d3.json("./../../../../extract/id-formatting/counties-id.json");
+    this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
     this.countiesMap = topoJson.feature(
       this.us,
       this.us.objects.counties
@@ -122,6 +122,10 @@ export class ChloroplethComponent implements OnInit {
       .style("fill", function(d) {
         return d3.interpolatePuBu(d.properties.value);
       });
+  }
+
+  changeYear(){
+    
   }
 
   change() {
