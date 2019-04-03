@@ -121,6 +121,13 @@ export class ChloroplethComponent implements OnInit {
       .attr("d", this.path)
       .style("fill", function(d) {
         return d3.interpolatePuBu(d.properties.value);
+      })
+      .on("mousemove", function (d) {
+        //this.svg.selectAll("path").style("opacity", 0.5);
+        d3.select(this).attr('fill-opacity', 1);
+      })
+      .on("mouseout", function () {
+        this.svg.selectAll("path").style("opacity", 1);
       });
   }
 
