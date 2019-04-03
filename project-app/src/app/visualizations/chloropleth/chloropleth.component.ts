@@ -125,7 +125,6 @@ export class ChloroplethComponent implements OnInit {
   }
 
   changeYear(){
-    
   }
 
   change() {
