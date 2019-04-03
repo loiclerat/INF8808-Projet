@@ -38,12 +38,12 @@ export class ChloroplethComponent implements OnInit {
   }
 
   async ngOnInit() {
+    //prepare usa map
     this.svg = d3
       .select("#map")
       .append("svg")
       .attr("width", this.width)
       .attr("height", this.height);
-
     this.path = d3.geoPath();
     this.us = await d3.json("https://d3js.org/us-10m.v1.json");
     this.svg.append("g").attr("class", "states");
@@ -54,13 +54,15 @@ export class ChloroplethComponent implements OnInit {
     this.countiesIdNames = await d3.json("./../../../../extract/id-formatting/counties-id.json");
     this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
 
-    const DEFAULT_YEAR = "2014"; 
+    const DEFAULT_YEAR = "2017"; 
+    //states
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
     this.updateJsonMapForStates(DEFAULT_YEAR);
     this.buildForStates();
-
     //counties
     this.countiesMap = topoJson.feature(this.us,this.us.objects.counties).features;
+    this.updateJsonMapForCounties(DEFAULT_YEAR);
+
     this.buildLegend();
   } 
 
@@ -157,9 +159,5 @@ export class ChloroplethComponent implements OnInit {
         value: result
       };
     });
-  }
-
-  change() {
-    this.buildForCounties();
   }
 }
