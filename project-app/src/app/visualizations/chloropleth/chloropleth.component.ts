@@ -2,10 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import * as d3 from "d3";
 import * as topoJson from "topojson";
 
-// import statesData from "./utilis";
-
 enum MapType {
-  State = 0,
+  State,
   County
 }
 
@@ -25,14 +23,12 @@ export class ChloroplethComponent implements OnInit {
   private statesIncidentes: any[] = [];
   private statesMap: any;
   private countiesMap: any;
-  private type : string;
+  private type : MapType;
 
   private statesIdNames;
   private countiesIdNames;
   private dataSatesIncidents;
   private dataCountiesIncidents;
-
-  private currentYear : string;
 
   constructor() {
     this.statesIncidentes.push({
@@ -42,9 +38,6 @@ export class ChloroplethComponent implements OnInit {
   }
 
   async ngOnInit() {
-
-    this.type = "state"
-
     this.svg = d3
       .select("#map")
       .append("svg")
@@ -53,34 +46,25 @@ export class ChloroplethComponent implements OnInit {
 
     this.path = d3.geoPath();
     this.us = await d3.json("https://d3js.org/us-10m.v1.json");
-    //this.svg.append("g").attr("class", "states");
+    this.svg.append("g").attr("class", "states");
 
     //load neccessary data
     this.statesIdNames = await d3.json("./../../../../extract/id-formatting/states-id.json");
     this.dataSatesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_States.json");
+    this.countiesIdNames = await d3.json("./../../../../extract/id-formatting/counties-id.json");
+    this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
 
-
-    // color
+    const DEFAULT_YEAR = "2014"; 
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
-    this.updateJsonMapForStates(this.currentYear);
-
+    this.updateJsonMapForStates(DEFAULT_YEAR);
     this.buildForStates();
 
     //counties
-    this.countiesIdNames = await d3.json("./../../../../extract/id-formatting/counties-id.json");
-    this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
-    this.countiesMap = topoJson.feature(
-      this.us,
-      this.us.objects.counties
-    ).features;
+    this.countiesMap = topoJson.feature(this.us,this.us.objects.counties).features;
+    this.buildLegend();
+  } 
 
-    this.countiesMap.forEach((county: any) => {
-      let countyName = this.countiesIdNames[county.id];
-      let result = countyName in this.dataCountiesIncidents[this.currentYear] ? this.dataCountiesIncidents[this.currentYear][countyName] : 0;
-      county.properties = {
-        value: result
-      };
-    });
+  buildLegend(): void {
     var key = d3.select("#legend1")
       .append("svg")
       .attr("width", 200)
@@ -110,18 +94,16 @@ export class ChloroplethComponent implements OnInit {
       .attr("height", 50 - 30)
       .style("fill", "url(#gradient)")
       .attr("transform", "translate(0,10)");
-
-  } 
+  }
 
   buildForCounties() {
-    this.type = "counties";
+    this.type = MapType.County;
     this.svg.remove();
     this.svg = d3
       .select("#map")
       .append("svg")
       .attr("width", this.width)
       .attr("height", this.height);
-
     this.svg
       .selectAll("path")
       .data(this.countiesMap)
@@ -134,7 +116,7 @@ export class ChloroplethComponent implements OnInit {
   }
 
   buildForStates() {
-    this.type = "state";
+    this.type = MapType.State;
     this.svg.remove();
     this.svg = d3
       .select("#map")
@@ -153,8 +135,8 @@ export class ChloroplethComponent implements OnInit {
   }
 
   changeYear(year : string){
-    this.currentYear = year
-    
+    let functionToCall = this.type == MapType.State ? this.updateJsonMapForStates : this.updateJsonMapForCounties;
+    functionToCall(year);    
   }
 
   updateJsonMapForStates(year : string){
@@ -167,6 +149,15 @@ export class ChloroplethComponent implements OnInit {
     });
   }
 
+  updateJsonMapForCounties(year : string){
+    this.countiesMap.forEach((county: any) => {
+      let countyName = this.countiesIdNames[county.id];
+      let result = countyName in this.dataCountiesIncidents[year] ? this.dataCountiesIncidents[year][countyName] : 0;
+      county.properties = {
+        value: result
+      };
+    });
+  }
 
   change() {
     this.buildForCounties();
