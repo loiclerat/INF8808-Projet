@@ -137,8 +137,13 @@ export class ChloroplethComponent implements OnInit {
   }
 
   changeYear(year : string){
-    let functionToCall = this.type == MapType.State ? this.updateJsonMapForStates : this.updateJsonMapForCounties;
-    functionToCall(year);    
+    if(this.type == MapType.State){
+      this.updateJsonMapForStates(year);
+      this.buildForStates();
+    }else {
+      this.updateJsonMapForCounties(year);
+      this.buildForCounties();
+    }
   }
 
   updateJsonMapForStates(year : string){
