@@ -25,6 +25,7 @@ export class ChloroplethComponent implements OnInit {
   private statesIncidentes: any[] = [];
   private statesMap: any;
   private countiesMap: any;
+  private type : string;
 
   private statesIdNames;
   private countiesIdNames;
@@ -41,7 +42,8 @@ export class ChloroplethComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.currentYear = "2016";
+
+    this.type = "state"
 
     this.svg = d3
       .select("#map")
@@ -60,13 +62,7 @@ export class ChloroplethComponent implements OnInit {
 
     // color
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
-    this.statesMap.forEach((state: any) => {
-      let stateName = this.statesIdNames[state.id];
-      let result = stateName in this.dataSatesIncidents[this.currentYear] ? this.dataSatesIncidents[this.currentYear][stateName] : 0;
-      state.properties = {
-        value: result
-      };
-    });
+    this.updateJsonMapForStates(this.currentYear);
 
     this.buildForStates();
 
@@ -85,9 +81,40 @@ export class ChloroplethComponent implements OnInit {
         value: result
       };
     });
-  }
+    var key = d3.select("#legend1")
+      .append("svg")
+      .attr("width", 200)
+      .attr("height", 50);
+
+    var legend = key.append("defs")
+      .append("svg:linearGradient")
+      .attr("id", "gradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")
+      .attr("x2", "100%")
+      .attr("y2", "100%")
+      .attr("spreadMethod", "pad");
+
+    legend.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#FFF7FB")
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#023858")
+      .attr("stop-opacity", 1);
+
+    key.append("rect")
+      .attr("width", 200)
+      .attr("height", 50 - 30)
+      .style("fill", "url(#gradient)")
+      .attr("transform", "translate(0,10)");
+
+  } 
 
   buildForCounties() {
+    this.type = "counties";
     this.svg.remove();
     this.svg = d3
       .select("#map")
@@ -102,11 +129,12 @@ export class ChloroplethComponent implements OnInit {
       .append("path")
       .attr("d", this.path)
       .style("fill", function(d) {
-        return d3.interpolatePuBu(d.properties.value);
+        return d3.interpolateBlues(d.properties.value);
       });
   }
 
   buildForStates() {
+    this.type = "state";
     this.svg.remove();
     this.svg = d3
       .select("#map")
@@ -120,12 +148,25 @@ export class ChloroplethComponent implements OnInit {
       .append("path")
       .attr("d", this.path)
       .style("fill", function(d) {
-        return d3.interpolatePuBu(d.properties.value);
+        return d3.interpolateBlues(d.properties.value);
       });
   }
 
-  changeYear(){
+  changeYear(year : string){
+    this.currentYear = year
+    
   }
+
+  updateJsonMapForStates(year : string){
+    this.statesMap.forEach((state: any) => {
+      let stateName = this.statesIdNames[state.id];
+      let result = stateName in this.dataSatesIncidents[year] ? this.dataSatesIncidents[year][stateName] : 0;
+      state.properties = {
+        value: result
+      };
+    });
+  }
+
 
   change() {
     this.buildForCounties();
