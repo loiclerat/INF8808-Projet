@@ -35,48 +35,45 @@ export class ChloroplethComponent implements OnInit {
   private maximum: number;
   private tooltip: any;
 
-  constructor() {
-  }
-
   async ngOnInit() {
-    //prepare usa map
+    // prepare usa map
     this.resetMapSVG();
     this.path = d3.geoPath();
     this.us = await d3.json("https://d3js.org/us-10m.v1.json");
     this.svg.append("g").attr("class", "states");
     this.tooltip = d3Tip().attr("class", "d3-tip");
     this.tooltip.html((data: DataMap, type: MapType) => {
-      let typeText = type == MapType.State ? "État" : "Comté";
+      const typeText = type === MapType.State ? "État" : "Comté";
       return `<div>${typeText}: <b> ${data.name} </b> <br>
                 Total: <b> ${data.total} </b><br>
-                Maximum : <b> ${data.maximum} </b></div>`
+                Maximum : <b> ${data.maximum} </b></div>`;
     });
-    //load neccessary data
+    // load neccessary data
     this.statesIdNames = await d3.json("./../../../../extract/id-formatting/states-id.json");
     this.dataSatesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_States.json");
     this.countiesIdNames = await d3.json("./../../../../extract/id-formatting/counties-id.json");
     this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
 
     const DEFAULT_YEAR = "2014";
-    //states
+    // states
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
     this.updateJsonMapForStates(DEFAULT_YEAR);
     this.type = MapType.State;
     this.buildMap(this.tooltip, this.type);
-    //counties
+    // counties
     this.countiesMap = topoJson.feature(this.us, this.us.objects.counties).features;
     this.updateJsonMapForCounties(DEFAULT_YEAR);
 
     this.buildLegend();
   }
 
-  changeMap(mapType: MapType) {
+  public changeMap(mapType: MapType) {
     this.type = mapType;
     this.buildMap(this.tooltip, mapType);
   }
 
   private buildMap(tooltip: any, mapType: MapType) {
-    let mapTypeData = mapType == MapType.State ? this.statesMap : this.countiesMap;
+    const mapTypeData = mapType === MapType.State ? this.statesMap : this.countiesMap;
     this.resetMapSVG();
     this.svg
       .selectAll("path")
@@ -98,16 +95,16 @@ export class ChloroplethComponent implements OnInit {
       })
       .on("mouseout", function (d) {
         d3.select("#map").select("svg").selectAll("path").style("opacity", 1);
-        //d3.select("#tooltip").style("display", "none");
         tooltip.hide(d);
       });
     this.svg.call(tooltip);
   }
 
   private resetMapSVG() {
-    //rebuild a new map
-    if (this.svg != undefined)
+    // rebuild a new map
+    if (this.svg !== undefined) {
       this.svg.remove();
+    }
     this.svg = d3
       .select("#map")
       .append("svg")
@@ -115,8 +112,8 @@ export class ChloroplethComponent implements OnInit {
       .attr("height", this.height);
   }
 
-  changeYear(year: string) {
-    if (this.type == MapType.State) {
+  public changeYear(year: string) {
+    if (this.type === MapType.State) {
       this.updateJsonMapForStates(year);
       this.buildMap(this.tooltip, this.type);
     } else {
@@ -125,13 +122,13 @@ export class ChloroplethComponent implements OnInit {
     }
   }
 
-  updateJsonMapForStates(year: string) {
+  private updateJsonMapForStates(year: string) {
     this.statesMap.forEach((state: any) => {
-      let stateName = this.statesIdNames[state.id];
-      let ratio = stateName in this.dataSatesIncidents[year] ? this.dataSatesIncidents[year][stateName] : 0;
-      let total = this.dataSatesIncidents[year]["maximum"] * ratio;
-      this.maximum = this.dataSatesIncidents[year]["maximum"]
-      this.minimum = this.dataSatesIncidents[year]["minimum"]
+      const stateName = this.statesIdNames[state.id];
+      const ratio = stateName in this.dataSatesIncidents[year] ? this.dataSatesIncidents[year][stateName] : 0;
+      const total = this.dataSatesIncidents[year]["maximum"] * ratio;
+      this.maximum = this.dataSatesIncidents[year]["maximum"];
+      this.minimum = this.dataSatesIncidents[year]["minimum"];
       state.properties = {
         value: ratio,
         name: stateName,
@@ -142,13 +139,13 @@ export class ChloroplethComponent implements OnInit {
     });
   }
 
-  updateJsonMapForCounties(year: string) {
+  private updateJsonMapForCounties(year: string) {
     this.countiesMap.forEach((county: any) => {
-      let countyName = this.countiesIdNames[county.id];
-      let ratio = countyName in this.dataCountiesIncidents[year] ? this.dataCountiesIncidents[year][countyName] : 0;
-      let total = this.dataCountiesIncidents[year]["maximum"] * ratio;
-      this.maximum = this.dataCountiesIncidents[year]["maximum"]
-      this.minimum = this.dataCountiesIncidents[year]["minimum"]
+      const countyName = this.countiesIdNames[county.id];
+      const ratio = countyName in this.dataCountiesIncidents[year] ? this.dataCountiesIncidents[year][countyName] : 0;
+      const total = this.dataCountiesIncidents[year]["maximum"] * ratio;
+      this.maximum = this.dataCountiesIncidents[year]["maximum"];
+      this.minimum = this.dataCountiesIncidents[year]["minimum"];
       county.properties = {
         value: ratio,
         name: countyName,
@@ -159,13 +156,13 @@ export class ChloroplethComponent implements OnInit {
     });
   }
 
-  buildLegend(): void {
-    var key = d3.select("#legend1")
+  private buildLegend(): void {
+    const key = d3.select("#legend1")
       .append("svg")
       .attr("width", 200)
       .attr("height", 50);
 
-    var legend = key.append("defs")
+    const legend = key.append("defs")
       .append("svg:linearGradient")
       .attr("id", "gradient")
       .attr("x1", "0%")
