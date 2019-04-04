@@ -1265,7 +1265,8 @@
         "Northwest Arctic": 0.0016987542468856172,
         "Yukon-Koyukuk": 0.00028312570781426955,
         "North Slope": 0.0008493771234428086,
-        "maximum": 3532
+        "maximum": 3532,
+        "minimum": 1
     },
     "2017": {
         "Hawaii": 0.010055141096334739,
@@ -2542,7 +2543,8 @@
         "Fairbanks North Star": 0.015244891339604282,
         "Northwest Arctic": 0.0006487187804086928,
         "North Slope": 0.0006487187804086928,
-        "maximum": 3083
+        "maximum": 3083,
+        "minimum": 1
     },
     "2015": {
         "Hawaii": 0.0156,
@@ -3811,7 +3813,8 @@
         "Fairbanks North Star": 0.0284,
         "Yukon-Koyukuk": 0.0024,
         "Northwest Arctic": 0.0024,
-        "maximum": 2500
+        "maximum": 2500,
+        "minimum": 1
     },
     "2014": {
         "Hawaii": 0.006103286384976526,
@@ -5025,6 +5028,7 @@
         "Nome": 0.00046948356807511736,
         "Yukon-Koyukuk": 0.0009389671361502347,
         "North Slope": 0.0014084507042253522,
-        "maximum": 2130
+        "maximum": 2130,
+        "minimum": 1
     }
 }

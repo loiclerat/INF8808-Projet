@@ -3,7 +3,7 @@ import io
 import json
 
 
-file_name = "domain_States.json"
+file_name = "domain_Counties.json"
 
 
 with open(file_name, 'r') as csvFile:
@@ -13,12 +13,13 @@ csvFile.close()
 for year in data:
 	max = 0
 	for county in data[year]:
-		if county != "maximum":
+		if county != "maximum" and county != "minimum":
 			data[year][county] = data[year][county]  / data[year]["maximum"]
+
 	
 
 		
-with open('domain_States.json', 'w') as fp:
+with open('domain_Counties.json', 'w') as fp:
    json.dump(data, fp)
 
 
