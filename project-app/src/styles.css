@@ -44,7 +44,8 @@ circle {
   font-size: 13px;
 }
 
-.d3-tip div, .d3-tip b {
+.d3-tip div,
+.d3-tip b {
   color: #fff;
 }
 
