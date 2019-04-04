@@ -30,6 +30,10 @@ export class ChloroplethComponent implements OnInit {
   private dataSatesIncidents;
   private dataCountiesIncidents;
 
+
+  private minimum = 1;
+  private maximum = 2;
+
   constructor() {
     this.statesIncidentes.push({
       value: 1000,
@@ -169,6 +173,8 @@ export class ChloroplethComponent implements OnInit {
       let stateName = this.statesIdNames[state.id];
       let ratio = stateName in this.dataSatesIncidents[year] ? this.dataSatesIncidents[year][stateName] : 0;
       let total = this.dataSatesIncidents[year]["maximum"] * ratio;
+      this.maximum = this.dataSatesIncidents[year]["maximum"]
+      this.minimum = this.dataSatesIncidents[year]["minimum"]
       state.properties = {
         value: ratio,
         name: stateName,
@@ -182,6 +188,8 @@ export class ChloroplethComponent implements OnInit {
       let countyName = this.countiesIdNames[county.id];
       let ratio = countyName in this.dataCountiesIncidents[year] ? this.dataCountiesIncidents[year][countyName] : 0;
       let total = this.dataCountiesIncidents[year]["maximum"] * ratio;
+      this.maximum = this.dataCountiesIncidents[year]["maximum"]
+      this.minimum = this.dataCountiesIncidents[year]["minimum"]
       county.properties = {
         value: ratio,
         name: countyName,
