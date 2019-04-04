@@ -13,7 +13,8 @@ csvFile.close()
 for year in data:
 	max = 0
 	for county in data[year]:
-		data[year][county] = data[year][county]  / data[year]["maximum"]
+		if county != "maximum":
+			data[year][county] = data[year][county]  / data[year]["maximum"]
 	
 
 		
