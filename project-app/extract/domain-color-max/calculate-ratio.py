@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import math
 
 
 file_name = "domain_Counties.json"
@@ -11,10 +12,10 @@ with open(file_name, 'r') as csvFile:
 csvFile.close()
 
 for year in data:
-	max = 0
 	for county in data[year]:
 		if county != "maximum" and county != "minimum":
-			data[year][county] = data[year][county]  / data[year]["maximum"]
+			if data[year][county] > 0:
+				data[year][county] = math.log(data[year][county], 10)  / math.log(data[year]["maximum"], 10)
 
 	
 

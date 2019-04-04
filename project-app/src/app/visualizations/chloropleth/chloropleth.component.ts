@@ -145,7 +145,7 @@ export class ChloroplethComponent implements OnInit {
       .append("path")
       .attr("d", this.path)
       .style("fill", function (d) {
-        return d3.interpolatePuBu(d.properties.value);
+        return d3.interpolateBlues(d.properties.value);
       })
       .on("mousemove", function (d) {
         //this.svg.selectAll("path").style("opacity", 0.5);
