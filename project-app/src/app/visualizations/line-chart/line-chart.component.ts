@@ -139,7 +139,7 @@ export class LineChartComponent implements OnInit {
     return d3.line()
       .x((d: any, i: number) => x(i))
       .y((d: any) => y(d))
-      .curve(d3.curveBasisOpen);
+      .curve(d3.curveCardinal);
   }
 
   private domainColor(color: d3.ScaleOrdinal<string, string>) {
