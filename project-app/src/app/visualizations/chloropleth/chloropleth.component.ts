@@ -93,8 +93,8 @@ export class ChloroplethComponent implements OnInit {
       })
       .on("mousemove", function (d) {
         tooltip.show(d.properties, MapType.State, this)
-          .style("left", (d3.event.pageX - 61) + "px")
-          .style("top", (d3.event.pageY - 85) + "px");
+          .style("left", (d3.event.pageX - 95) + "px")
+          .style("top", (d3.event.pageY - 87) + "px");
       })
       .on("mouseout", function (d) {
         d3.select("#map").select("svg").selectAll("path").style("opacity", 1);
