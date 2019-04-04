@@ -197,8 +197,8 @@ export class LineChartComponent implements OnInit {
       .style("left", d3.event.pageX + "px")
       .style("top", d3.event.pageY + "px")
       .html(
-        "<p>État : " + d.state + "</p>" +
-        "<p>Incidents : " + Math.round(yScale.invert(d3.mouse(self)[1])) + "</p>"
+        "État : " + d.state + "<br>" +
+        "Incidents : " + Math.round(yScale.invert(d3.mouse(self)[1]))
       );
   }
 
