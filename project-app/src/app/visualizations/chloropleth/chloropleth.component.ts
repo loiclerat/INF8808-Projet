@@ -89,6 +89,12 @@ export class ChloroplethComponent implements OnInit {
       .attr("offset", "0%")
       .attr("stop-color", "#FFF7FB")
       .attr("stop-opacity", 1);
+      
+
+    legend.append("stop")
+     .attr("offset", "80%")
+     .attr("stop-color", "#1662a9")
+     .attr("stop-opacity", 1);
 
     legend.append("stop")
       .attr("offset", "100%")
@@ -145,10 +151,12 @@ export class ChloroplethComponent implements OnInit {
       .append("path")
       .attr("d", this.path)
       .style("fill", function (d) {
+        
         return d3.interpolateBlues(d.properties.value);
       })
       .on("mousemove", function (d) {
         //this.svg.selectAll("path").style("opacity", 0.5);
+        console.log(d3.interpolateBlues(d.properties.value))
         console.log(d.id, d.properties.value, d.properties.name, d.properties.total);
         d3.select(this).attr('fill-opacity', 1);
       })
