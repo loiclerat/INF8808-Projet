@@ -44,9 +44,8 @@ export class ChloroplethComponent implements OnInit {
     this.tooltip = d3Tip().attr("class", "d3-tip");
     this.tooltip.html((data: DataMap, type: MapType) => {
       const typeText = type === MapType.State ? "État" : "Comté";
-      return `<div>${typeText}: <b> ${data.name} </b> <br>
-                Total: <b> ${data.total} </b><br>
-                Maximum : <b> ${data.maximum} </b></div>`;
+      return `<div>${typeText} : <b> ${data.name} </b> <br>
+                Incidents : <b> ${Math.round(data.total)} </b></div>`; // TODO à valider que c'est vrm cela
     });
     // load neccessary data
     this.statesIdNames = await d3.json("./../../../../extract/id-formatting/states-id.json");
@@ -89,7 +88,7 @@ export class ChloroplethComponent implements OnInit {
         d3.select(this).style("opacity", 1);
       })
       .on("mousemove", function (d) {
-        tooltip.show(d.properties, MapType.State, this)
+        tooltip.show(d.properties, mapType, this)
           .style("left", (d3.event.pageX - 95) + "px")
           .style("top", (d3.event.pageY - 87) + "px");
       })
