@@ -33,7 +33,7 @@ export class ChloroplethComponent implements OnInit {
 
   private minimum: number;
   private maximum: number;
-  tooltip: any;
+  private tooltip: any;
 
   constructor() {
   }
@@ -62,7 +62,8 @@ export class ChloroplethComponent implements OnInit {
     //states
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
     this.updateJsonMapForStates(DEFAULT_YEAR);
-    this.buildForStates(this.tooltip);
+    this.type = MapType.State;
+    this.buildMap(this.tooltip, this.type);
     //counties
     this.countiesMap = topoJson.feature(this.us, this.us.objects.counties).features;
     this.updateJsonMapForCounties(DEFAULT_YEAR);
@@ -70,36 +71,17 @@ export class ChloroplethComponent implements OnInit {
     this.buildLegend();
   }
 
-  buildForCounties() {
-    this.type = MapType.County;
-    this.resetMapSVG();
-
-    this.svg
-      .selectAll("path")
-      .data(this.countiesMap)
-      .enter()
-      .append("path")
-      .attr("d", this.path)
-      .style("fill", function (d) {
-        return d3.interpolateBlues(d.properties.value);
-      })
-      .on("mousemove", function (d) {
-        //this.svg.selectAll("path").style("opacity", 0.5);
-        console.log(d.id, d.properties.value, d.properties.name, d.properties.total);
-        d3.select(this).attr('fill-opacity', 1);
-      })
-      .on("mouseout", function (d) {
-        //this.svg.selectAll("path").style("opacity", 1);
-        return d3.interpolateBlues(d.properties.value);
-      });
+  changeMap(mapType : MapType) {
+    this.type = mapType;
+    this.buildMap(this.tooltip, mapType);
   }
 
-  buildForStates(tooltip : any) {
-    this.type = MapType.State;
+  private buildMap(tooltip : any, mapType: MapType) {
+    let mapTypeData = mapType == MapType.State ? this.statesMap : this.countiesMap;
     this.resetMapSVG();
     this.svg
       .selectAll("path")
-      .data(this.statesMap)
+      .data(mapTypeData)
       .enter()
       .append("path")
       .attr("d", this.path)
@@ -112,7 +94,7 @@ export class ChloroplethComponent implements OnInit {
       })
       .on("mousemove", function (d) {
         tooltip.show(d.properties, MapType.State, this)
-          .style("left", (d3.event.pageX - 76) + "px")
+          .style("left", (d3.event.pageX - 61) + "px")
           .style("top", (d3.event.pageY - 85) + "px");
       })
       .on("mouseout", function (d) {
@@ -137,10 +119,10 @@ export class ChloroplethComponent implements OnInit {
   changeYear(year: string) {
     if (this.type == MapType.State) {
       this.updateJsonMapForStates(year);
-      this.buildForStates(this.tooltip);
+      this.buildMap(this.tooltip, this.type);
     } else {
       this.updateJsonMapForCounties(year);
-      this.buildForCounties();
+      this.buildMap(this.tooltip, this.type);
     }
   }
 
