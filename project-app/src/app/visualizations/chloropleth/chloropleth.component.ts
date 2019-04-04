@@ -28,7 +28,7 @@ export class ChloroplethComponent implements OnInit {
 
   private statesIdNames: any;
   private countiesIdNames: any;
-  private dataSatesIncidents: any;
+  private dataStatesIncidents: any;
   private dataCountiesIncidents: any;
 
   private minimum: number;
@@ -50,7 +50,7 @@ export class ChloroplethComponent implements OnInit {
     });
     // load neccessary data
     this.statesIdNames = await d3.json("./../../../../extract/id-formatting/states-id.json");
-    this.dataSatesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_States.json");
+    this.dataStatesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_States.json");
     this.countiesIdNames = await d3.json("./../../../../extract/id-formatting/counties-id.json");
     this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
 
@@ -125,10 +125,10 @@ export class ChloroplethComponent implements OnInit {
   private updateJsonMapForStates(year: string) {
     this.statesMap.forEach((state: any) => {
       const stateName = this.statesIdNames[state.id];
-      const ratio = stateName in this.dataSatesIncidents[year] ? this.dataSatesIncidents[year][stateName] : 0;
-      const total = this.dataSatesIncidents[year]["maximum"] * ratio;
-      this.maximum = this.dataSatesIncidents[year]["maximum"];
-      this.minimum = this.dataSatesIncidents[year]["minimum"];
+      const ratio = stateName in this.dataStatesIncidents[year] ? this.dataStatesIncidents[year][stateName] : 0;
+      const total = this.dataStatesIncidents[year]["maximum"] * ratio;
+      this.maximum = this.dataStatesIncidents[year]["maximum"];
+      this.minimum = this.dataStatesIncidents[year]["minimum"];
       state.properties = {
         value: ratio,
         name: stateName,
