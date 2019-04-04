@@ -1,12 +1,12 @@
 
 // TODO:
-// - tooltip
-// - légende : ticks (incidents par 1000 habitants), top100/bottom100
-// - Improve style
-// - Modif données pour essayer d'avoir les grandes villes manquantes
-// - Optimization ?
-// - Highlight grandes villes ?
-// - Test relax meilleur ?
+// - disable relax
+// - merger les 2 graphes en 1 seul
+// - fit hauteur page
+// - merger les villes qui s'overlapent. Réfléchir liste et tooltip dans ce cas (hover only nom ville ?)
+// - séparation top 50 / bottom 50
+// - légende : ticks (incidents par 1000 habitants)
+// - Modif données pour essayer d'avoir les grandes villes manquantes (only New York ?)
 
 import { Component, OnInit } from "@angular/core";
 import * as d3 from "d3";
@@ -24,8 +24,8 @@ export class SlopeChartComponent implements OnInit {
   // Config stuff
   private static readonly margin = { top: 80, right: 160, bottom: 40, left: 160 };
 
-  private static readonly width = 550 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
-  private static readonly height = 4000 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
+  private static readonly width = 800 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
+  private static readonly height = 700 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
 
   private static readonly config = {
     xOffset: 0,
@@ -146,7 +146,6 @@ export class SlopeChartComponent implements OnInit {
 
   private initialization() {
     this.createSlopeChart(this.dataByCityManyIncidents, "slope-chart-1");
-    this.createSlopeChart(this.dataByCityFewIncidents, "slope-chart-2");
   }
 
   private createSlopeChart(data: DataByCity[], svgId: string) {
@@ -217,11 +216,11 @@ export class SlopeChartComponent implements OnInit {
       .each(d => { d.yRightPosition = yScale(d.incidentRatio2017); });
 
     // Relax y positions to avoid labels and circles overlapping
-    const heightAdjustLeft = this.relax(leftSlopeGroups, "yLeftPosition");
-    const heightAdjustRight = this.relax(rightSlopeGroups, "yRightPosition");
+    // const heightAdjustLeft = this.relax(leftSlopeGroups, "yLeftPosition");
+    // const heightAdjustRight = this.relax(rightSlopeGroups, "yRightPosition");
 
     // Maximum height value might need a little adjustment after relax
-    const heightAdjustFinal = max([heightAdjustLeft, heightAdjustRight]);
+    // const heightAdjustFinal = max([heightAdjustLeft, heightAdjustRight]);
 
     // Draw left circles
     leftSlopeGroups.append("circle")
@@ -267,7 +266,7 @@ export class SlopeChartComponent implements OnInit {
       .attr("dy", -SlopeChartComponent.margin.top / 2)
       .text(SlopeChartComponent.config.leftTitle);
 
-    // Left (2017)
+    // Right (2017)
     titles.append("text")
       .attr("x", SlopeChartComponent.config.width)
       .attr("dx", 10)
@@ -280,11 +279,11 @@ export class SlopeChartComponent implements OnInit {
 
     borderLines.append("line")
       .attr("x1", 0).attr("y1", 0)
-      .attr("x2", 0).attr("y2", SlopeChartComponent.config.height + heightAdjustFinal);
+      .attr("x2", 0).attr("y2", SlopeChartComponent.config.height/* + heightAdjustFinal*/);
 
     borderLines.append("line")
       .attr("x1", SlopeChartComponent.width).attr("y1", 0)
-      .attr("x2", SlopeChartComponent.width).attr("y2", SlopeChartComponent.config.height + heightAdjustFinal);
+      .attr("x2", SlopeChartComponent.width).attr("y2", SlopeChartComponent.config.height/* + heightAdjustFinal*/);
 
     // Draw slope lines
     slopeGroups.append("line")
