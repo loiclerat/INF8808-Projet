@@ -1,5 +1,7 @@
 export interface DataMap {
     value: number;
     name: string,
-    total: number
+    total: number,
+    maximum: number,
+    minmum: number
 }

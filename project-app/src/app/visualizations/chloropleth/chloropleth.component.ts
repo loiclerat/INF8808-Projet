@@ -46,11 +46,10 @@ export class ChloroplethComponent implements OnInit {
     this.svg.append("g").attr("class", "states");
     this.tooltip = d3Tip().attr("class", "d3-tip");
     this.tooltip.html((data: DataMap, type: MapType) => {
-      let typeText  = type == MapType.State ? "État" : "Comté";
-      let max = data.total / data.value;
+      let typeText = type == MapType.State ? "État" : "Comté";
       return `<div>${typeText}: <b> ${data.name} </b> <br>
                 Total: <b> ${data.total} </b><br>
-                Maximum : <b> ${max} </b></div>`
+                Maximum : <b> ${data.maximum} </b></div>`
     });
     //load neccessary data
     this.statesIdNames = await d3.json("./../../../../extract/id-formatting/states-id.json");
@@ -71,12 +70,12 @@ export class ChloroplethComponent implements OnInit {
     this.buildLegend();
   }
 
-  changeMap(mapType : MapType) {
+  changeMap(mapType: MapType) {
     this.type = mapType;
     this.buildMap(this.tooltip, mapType);
   }
 
-  private buildMap(tooltip : any, mapType: MapType) {
+  private buildMap(tooltip: any, mapType: MapType) {
     let mapTypeData = mapType == MapType.State ? this.statesMap : this.countiesMap;
     this.resetMapSVG();
     this.svg
@@ -89,7 +88,7 @@ export class ChloroplethComponent implements OnInit {
         return d3.interpolatePuBu(d.properties.value);
       })
       .on("mouseover", function (d, i) {
-        d3.select("#map").select("svg").selectAll("path").style("opacity", 0.2);
+        d3.select("#map").select("svg").selectAll("path").style("opacity", 0.1);
         d3.select(this).style("opacity", 1);
       })
       .on("mousemove", function (d) {
@@ -107,7 +106,7 @@ export class ChloroplethComponent implements OnInit {
 
   private resetMapSVG() {
     //rebuild a new map
-    if(this.svg != undefined)
+    if (this.svg != undefined)
       this.svg.remove();
     this.svg = d3
       .select("#map")
@@ -136,7 +135,9 @@ export class ChloroplethComponent implements OnInit {
       state.properties = {
         value: ratio,
         name: stateName,
-        total: total
+        total: total,
+        maximum: this.maximum,
+        minimum: this.minimum
       };
     });
   }
@@ -151,7 +152,9 @@ export class ChloroplethComponent implements OnInit {
       county.properties = {
         value: ratio,
         name: countyName,
-        total: total
+        total: total,
+        maximum: this.maximum,
+        minimum: this.minimum
       };
     });
   }
