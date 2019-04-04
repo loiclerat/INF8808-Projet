@@ -25,3 +25,8 @@ h3 {
   border-radius: 10px;
   border: 1px solid #003182;
 }
+
+span {
+  color: #0645ad;
+  font-weight: bold;
+}

@@ -3,10 +3,13 @@
     Quelle est l'évolution des incidents au cours des années?
   </h1>
   <p>
-    Voici le nombre d'incidents cumulés par mois par État entre le 1er janvier 2014 et le 31 décembre 2017.
-    Comme on peut le voir, les États où il y a beaucoup d'incidents et de fluctuation à travers le temps sont la
-    Californie, l'Illinois et la Floride. Cependant, pour la plupart des États, le nombre d'incidents est relativement
-    constant au fil des mois.
+    Voici le nombre d'incidents cumulés par mois par État entre le 1er janvier 2014 et le 31 décembre 2017. 
+    Comme on peut le voir, les États où il y a beaucoup d'incidents et de fluctuation à travers le temps sont la 
+    <span (mouseenter)="showState('California')" (mouseleave)="hideState()">Californie</span>, 
+    l'<span (mouseenter)="showState('Illinois')" (mouseleave)="hideState()">Illinois</span> et la 
+    <span (mouseenter)="showState('Florida')" (mouseleave)="hideState()">Floride</span>. Cependant, pour 
+    <span (mouseenter)="showConstantState()" (mouseleave)="hideState()">la plupart des États</span>, le nombre 
+    d'incidents est relativement constant au fil des mois.
   </p>
   <h3>
     L'évolution des incidents au cours des années
