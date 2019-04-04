@@ -31,23 +31,27 @@ export class ChloroplethComponent implements OnInit {
   private dataSatesIncidents: any;
   private dataCountiesIncidents: any;
 
-
-  private minimum = 1;
-  private maximum = 2;
+  private minimum: number;
+  private maximum: number;
+  tooltip: any;
 
   constructor() {
   }
 
   async ngOnInit() {
     //prepare usa map
-    this.svg = d3
-      .select("#map")
-      .append("svg")
-      .attr("width", this.width)
-      .attr("height", this.height);
+    this.resetMapSVG();
     this.path = d3.geoPath();
     this.us = await d3.json("https://d3js.org/us-10m.v1.json");
     this.svg.append("g").attr("class", "states");
+    this.tooltip = d3Tip().attr("class", "d3-tip");
+    this.tooltip.html((data: DataMap, type: MapType) => {
+      let typeText  = type == MapType.State ? "État" : "Comté";
+      let max = data.total / data.value;
+      return `<div>${typeText}: <b> ${data.name} </b> <br>
+                Total: <b> ${data.total} </b><br>
+                Maximum : <b> ${max} </b></div>`
+    });
     //load neccessary data
     this.statesIdNames = await d3.json("./../../../../extract/id-formatting/states-id.json");
     this.dataSatesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_States.json");
@@ -58,7 +62,7 @@ export class ChloroplethComponent implements OnInit {
     //states
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
     this.updateJsonMapForStates(DEFAULT_YEAR);
-    this.buildForStates();
+    this.buildForStates(this.tooltip);
     //counties
     this.countiesMap = topoJson.feature(this.us, this.us.objects.counties).features;
     this.updateJsonMapForCounties(DEFAULT_YEAR);
@@ -68,12 +72,8 @@ export class ChloroplethComponent implements OnInit {
 
   buildForCounties() {
     this.type = MapType.County;
-    this.svg.remove();
-    this.svg = d3
-      .select("#map")
-      .append("svg")
-      .attr("width", this.width)
-      .attr("height", this.height);
+    this.resetMapSVG();
+
     this.svg
       .selectAll("path")
       .data(this.countiesMap)
@@ -94,26 +94,9 @@ export class ChloroplethComponent implements OnInit {
       });
   }
 
-  buildForStates() {
-
-    const tip = d3Tip().attr("class", "d3-tip");
-    tip.html((data: DataMap, type: MapType) => {
-      let typeText  = type == MapType.State ? "État" : "Comté";
-      let max = data.total / data.value;
-      return `<div>${typeText}: <b> ${data.name} </b> <br>
-                Total: <b> ${data.total} </b><br>
-                Maximum : <b> ${max} </b></div>`
-    });
-
+  buildForStates(tooltip : any) {
     this.type = MapType.State;
-    //rebuild a new map
-    this.svg.remove();
-    this.svg = d3
-      .select("#map")
-      .append("svg")
-      .attr("width", this.width)
-      .attr("height", this.height);
-
+    this.resetMapSVG();
     this.svg
       .selectAll("path")
       .data(this.statesMap)
@@ -128,22 +111,33 @@ export class ChloroplethComponent implements OnInit {
         d3.select(this).style("opacity", 1);
       })
       .on("mousemove", function (d) {
-        tip.show(d.properties, MapType.State, this)
+        tooltip.show(d.properties, MapType.State, this)
           .style("left", (d3.event.pageX - 76) + "px")
           .style("top", (d3.event.pageY - 85) + "px");
       })
       .on("mouseout", function (d) {
         d3.select("#map").select("svg").selectAll("path").style("opacity", 1);
         //d3.select("#tooltip").style("display", "none");
-        tip.hide(d);
+        tooltip.hide(d);
       });
-    this.svg.call(tip);
+    this.svg.call(tooltip);
+  }
+
+  private resetMapSVG() {
+    //rebuild a new map
+    if(this.svg != undefined)
+      this.svg.remove();
+    this.svg = d3
+      .select("#map")
+      .append("svg")
+      .attr("width", this.width)
+      .attr("height", this.height);
   }
 
   changeYear(year: string) {
     if (this.type == MapType.State) {
       this.updateJsonMapForStates(year);
-      this.buildForStates();
+      this.buildForStates(this.tooltip);
     } else {
       this.updateJsonMapForCounties(year);
       this.buildForCounties();
