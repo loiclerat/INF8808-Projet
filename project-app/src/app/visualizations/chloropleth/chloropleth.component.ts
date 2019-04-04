@@ -88,6 +88,7 @@ export class ChloroplethComponent implements OnInit {
         return d3.interpolatePuBu(d.properties.value);
       })
       .on("mouseover", function (d, i) {
+        console.log(d3.interpolateBlues(d.properties.value))
         d3.select("#map").select("svg").selectAll("path").style("opacity", 0.1);
         d3.select(this).style("opacity", 1);
       })
@@ -162,16 +163,16 @@ export class ChloroplethComponent implements OnInit {
   buildLegend(): void {
     var key = d3.select("#legend1")
       .append("svg")
-      .attr("width", 200)
-      .attr("height", 50);
+      .attr("width", 25)
+      .attr("height", 500);
 
-    var legend = key.append("defs")
+      var legend = key.append("defs")
       .append("svg:linearGradient")
       .attr("id", "gradient")
-      .attr("x1", "0%")
+      .attr("x1", "100%")
       .attr("y1", "100%")
       .attr("x2", "100%")
-      .attr("y2", "100%")
+      .attr("y2", "0%")
       .attr("spreadMethod", "pad");
 
     legend.append("stop")
@@ -180,13 +181,18 @@ export class ChloroplethComponent implements OnInit {
       .attr("stop-opacity", 1);
 
     legend.append("stop")
+      .attr("offset", "75%")
+      .attr("stop-color", "#1e6cb0")
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
       .attr("offset", "100%")
       .attr("stop-color", "#023858")
       .attr("stop-opacity", 1);
 
     key.append("rect")
-      .attr("width", 200)
-      .attr("height", 50 - 30)
+      .attr("width", 25)
+      .attr("height", 530 - 30)
       .style("fill", "url(#gradient)")
       .attr("transform", "translate(0,10)");
   }
