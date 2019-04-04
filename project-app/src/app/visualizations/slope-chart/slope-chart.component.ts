@@ -74,7 +74,7 @@ export class SlopeChartComponent implements OnInit {
     });
 
 
-    d3.json("../../citypop.json").then((data: City[]) => {
+    d3.json("../../countypop.json").then((data: City[]) => {
       this.citiesPopulationData = data;
       this.finishLoading();
     });
@@ -97,8 +97,7 @@ export class SlopeChartComponent implements OnInit {
         return;
       }
 
-      const cleanCityName: string = incident.city_or_county.split(" (", 1)[0];
-
+      const cleanCityName: string = incident.city_or_county;
       // If the city exist in our city population dataset
       let cityFromPopulationDataset: City;
       if (cityFromPopulationDataset = this.citiesPopulationData.find(d => d.city === cleanCityName && d.state === incident.state)) {
