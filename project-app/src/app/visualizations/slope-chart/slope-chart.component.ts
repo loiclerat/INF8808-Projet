@@ -176,7 +176,7 @@ export class SlopeChartComponent implements OnInit {
     const tip = d3Tip().attr("class", "d3-tip");
 
     tip.html((d: DataByCity) => {
-      return `<div>Ville: <b> ${d.cityName} </b> <br>
+      return `<div>Comté: <b> ${d.cityName} </b> <br>
                 Etat: <b> ${d.stateName} </b> <br>
                 Population: <b> ${d.population} </b> <br>
                 Ratio par 1000 habitants (2014): <b> ${this.formatRatio(d.incidentRatio2014)} </b> <br>
@@ -193,16 +193,28 @@ export class SlopeChartComponent implements OnInit {
       .append("g")
       .attr("class", "slope-group")
       .attr("opacity", 1.0)
+      .attr("id", (d, i) => {return "slope-group-" + i})
       .on("mouseover", function (d) {
-        d3.select(this).selectAll("line").attr("stroke", "black");
-        d3.select(this).selectAll("g").selectAll("circle").attr("stroke", "black");
+        d3.select(this).raise();
+
+        d3.select(this).selectAll("line")
+          .attr("stroke", "black")
+          .raise();
+
+        d3.select(this).selectAll("g").selectAll("circle")
+          .attr("stroke", "black")
+          .raise();
+
         tip.show(d, this)
-          .style("left", (d3.event.pageX - 140) + "px")
+          .style("left", (d3.event.pageX - 120) + "px")
           .style("top", (d3.event.pageY - 150) + "px");
       })
       .on("mouseout", function (d) {
         d3.select(this).selectAll("line").attr("stroke", SlopeChartComponent.config.slopeLineUnfocusColor);
-        d3.select(this).selectAll("g").selectAll("circle").attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
+          
+        d3.select(this).selectAll("g").selectAll("circle")
+          .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
+
         tip.hide(d);
       });
 
@@ -243,16 +255,35 @@ export class SlopeChartComponent implements OnInit {
       .attr("cy", d => d.yLeftPosition)
       .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
-    // Draw left labels
-    leftSlopeGroups.append("g")
-      .attr("class", "slope-label-left")
-      .append("text")
-      .attr("x", -SlopeChartComponent.config.labelGroupOffset)
-      .attr("y", d => d.yLeftPosition)
-      .attr("dx", -SlopeChartComponent.config.labelKeyOffset)
-      .attr("dy", 3)
-      .attr("text-anchor", "end")
-      .text(d => d.cityName);
+    // Draw left labels concatenated
+    for(let oneGroup of this.cityGroupsLeft)
+    {
+      if (oneGroup.length > 0)
+      {
+        svg.append("g")
+          .attr("class", "slope-label-right")
+          .append("text")
+          .attr("x", -SlopeChartComponent.config.labelGroupOffset)
+          .attr("y", this.dataByCityManyIncidents[oneGroup[0]].yLeftPosition)
+          .attr("dx", -SlopeChartComponent.config.labelKeyOffset)
+          .attr("dy", 3)
+          .attr("text-anchor", "end")
+          .html(() => {
+              let htmlString = "";
+
+              for(let cityIndex of oneGroup)
+              {
+                if (htmlString != "")
+                {
+                  htmlString += ", ";
+                }
+
+                htmlString += '<a class="city-label" data-id='+ cityIndex +'>' + this.dataByCityManyIncidents[cityIndex]["cityName"] + '</a>';
+              }
+              return htmlString;
+          });
+      }
+    }
 
     // Draw right circles
     rightSlopeGroups.append("circle")
@@ -261,29 +292,73 @@ export class SlopeChartComponent implements OnInit {
       .attr("cy", d => d.yRightPosition)
       .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
-    // Draw right labels
-    rightSlopeGroups.append("g")
-      .attr("class", "slope-label-right")
-      .append("text")
-      .attr("x", SlopeChartComponent.width + SlopeChartComponent.config.labelGroupOffset)
-      .attr("y", d => d.yRightPosition)
-      .attr("dx", SlopeChartComponent.config.labelKeyOffset)
-      .attr("dy", 3)
-      .attr("text-anchor", "start")
-      .text(d => d.cityName);
+    // Draw right labels concatenated
+    for(let oneGroup of this.cityGroupsRight)
+    {
+      if (oneGroup.length > 0)
+      {
+        // Append svg groups for labels, these are separated from the left/right slope groups
+        svg.append("g")
+          .attr("class", "slope-label-right")
+          .append("text")
+          .attr("x", SlopeChartComponent.width + SlopeChartComponent.config.labelGroupOffset)
+          .attr("y", this.dataByCityManyIncidents[oneGroup[0]].yRightPosition)
+          .attr("dx", SlopeChartComponent.config.labelKeyOffset)
+          .attr("dy", 3)
+          .attr("text-anchor", "start")
+          .html(() => {
+              let htmlString = "";
 
-    // for(let oneCity of this.dataByCityManyIncidents)
-    // {
-    //   svg.append("g")
-    //     .attr("class", "slope-label-right")
-    //     .append("text")
-    //     .attr("x", SlopeChartComponent.width + SlopeChartComponent.config.labelGroupOffset)
-    //     .attr("y", oneCity.yRightPosition)
-    //     .attr("dx", SlopeChartComponent.config.labelKeyOffset)
-    //     .attr("dy", 3)
-    //     .attr("text-anchor", "start")
-    //     .text(oneCity.cityName);
-    // }
+              for(let cityIndex of oneGroup)
+              {
+                if (htmlString != "")
+                {
+                  htmlString += ", ";
+                }
+
+                htmlString += '<a class="city-label" data-id='+ cityIndex +'>' + this.dataByCityManyIncidents[cityIndex]["cityName"] + '</a>';
+              }
+              return htmlString;
+          });
+      }
+    }
+
+    // Bind labels mouseover behavior
+    d3.selectAll(".city-label")
+      .on("mouseover", function(){
+        // Set text bold
+        d3.select(this).attr("style", "font-weight: bold");
+
+        // Retrieve city index
+        const cityIndex = d3.select(this).attr("data-id");
+
+        // Retrieve corresponding svg group (slope line and circle)
+        const matchingGroups = d3.select("#slope-group-" + cityIndex)
+        const domElement: any = matchingGroups.node();
+
+        // Create mouseover event
+        const evtOver = document.createEvent( 'Events' );
+        evtOver.initEvent( "mouseover", true, false );
+
+        domElement.dispatchEvent( evtOver );
+      })
+      .on("mouseout", function(){
+        // Set text normal
+        d3.select(this).attr("style", "font-weight: normal");
+
+        // Retrieve city index
+        const cityIndex = d3.select(this).attr("data-id");
+
+        // Retrieve corresponding svg group (slope line and circle)
+        const matchingGroups = d3.select("#slope-group-" + cityIndex)
+        const domElement: any = matchingGroups.node();
+
+        // Create mouseout event
+        const evtOut = document.createEvent( 'Events' );
+        evtOut.initEvent( "mouseout", true, false );
+
+        domElement.dispatchEvent( evtOut );
+      });
 
     // Draw titles
     const titles = svg.append("g")
