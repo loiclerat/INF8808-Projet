@@ -1,30 +1,37 @@
 <div style="padding: 2rem 2rem; text-align: center">
-  <h4 class="display-5">Répartition géographique</h4>
-  <p class="lead" style="font-size: 16px">Quelle est la répartition géographique des incidents par armes à feu aux
-    États-Unis?
-    <br>
-    Voici le nombre d'incidents cumulés par mois par État et par comtés au cours des années 2014, 2015, 2016 et 2017.
-    Le
-    total de ces quatre années y est également présent. Comme on peut le voir, ...
-  </p>
+  <h3 class="display-5">Répartition géographique</h3>
 </div>
 <div lass="container">
   <div class="row">
-    <div class="col-10">
+    <div class="col-2">
+
+      <p class="lead" style="font-size: 16px">Quelle est la répartition géographique des incidents par armes à feu aux
+        États-Unis?
+        <br>
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
+        standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make
+        a
+        type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
+        remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing
+        Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions
+        of
+        Lorem Ipsum.
+      </p>
+    </div>
+    <div class="col-9">
       <div style="text-align: center" id="map">
       </div>
     </div>
-    <div class="col-2">
+    <div class="col-1">
       <h6>Régions</h6>
       <div class="form-group">
         <div class="custom-control custom-radio">
-          <input (click)="changeMap(0)" type="radio" id="customRadio1" name="customRadio"
-            class="custom-control-input" checked="">
+          <input (click)="changeMap(0)" type="radio" id="customRadio1" name="customRadio" class="custom-control-input"
+            checked="">
           <label class="custom-control-label" for="customRadio1">États</label>
         </div>
         <div class="custom-control custom-radio">
-          <input (click)="changeMap(1)" type="radio" id="customRadio2" name="customRadio"
-            class="custom-control-input">
+          <input (click)="changeMap(1)" type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
           <label class="custom-control-label" for="customRadio2">Comtés</label>
         </div>
       </div>
@@ -54,8 +61,8 @@
       <div>
         <div id="legend1" style="text-align: center" width="200" height="50"></div>
         <div class="parent" style="margin-right: auto; align-items: center; display: flex;">
-          <div id="legende-min" >{{this.minimum}}</div>
-          <div id="legende-max" >{{this.maximum}}</div>
+          <div id="legende-min">{{this.minimum}}</div>
+          <div id="legende-max">{{this.maximum}}</div>
         </div>
       </div>
     </div>
