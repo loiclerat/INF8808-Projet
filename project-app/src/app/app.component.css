@@ -7,8 +7,8 @@
   padding: 200px;
   background:
     /* top, transparent red, faked with gradient */
-    linear-gradient(rgba(0, 22, 40, 0.97),
-    rgba(0, 22, 40, 0.97)),
+    linear-gradient(rgba(0, 22, 40, 0.92),
+    rgba(0, 22, 40, 0.92)),
     /* bottom, image */
     url(../assets/bg.jpg);
   background-size: cover;
