@@ -427,11 +427,6 @@ export class SlopeChartComponent implements OnInit {
             return;
           }
 
-          //DEBUGRELAX console.log("=== Start fight ("+ groupIndex +") ===");
-          //DEBUGRELAX console.log(d1["cityName"] + " ; " + d2["cityName"]);
-          //DEBUGRELAX console.log(d1[groupIndex] + " ; " + d2[groupIndex]);
-          //DEBUGRELAX console.log(y1 + " ; " + y2); 
-
           again = true;
 
           const sign = deltaY > 0 ? 1 : -1;
@@ -442,7 +437,6 @@ export class SlopeChartComponent implements OnInit {
           // Update d1 group pos
           for(let cityIndex of cityGroups[d1[groupIndex]])
           {
-            //DEBUGRELAX console.log(this.dataByCityManyIncidents[cityIndex]["cityName"] + " <- " + newPos);
             this.dataByCityManyIncidents[cityIndex][position] = newPos;
           }
 
@@ -456,15 +450,10 @@ export class SlopeChartComponent implements OnInit {
             cityGroups[d1[groupIndex]].push(migratingCityIndex);
             
             // Update city's group index
-            //DEBUGRELAX console.log(this.dataByCityManyIncidents[migratingCityIndex]["cityName"] + " goes from " + oldD2Index + " to " + d1[groupIndex]);
             this.dataByCityManyIncidents[migratingCityIndex][groupIndex] = d1[groupIndex];
             // Update city's position
-            //DEBUGRELAX console.log(this.dataByCityManyIncidents[migratingCityIndex]["cityName"] + " <- " + newPos);
             this.dataByCityManyIncidents[migratingCityIndex][position] = newPos;
-            
-            //DEBUGRELAX console.log("Remaining length : " + cityGroups[oldD2Index].length);
           }
-          //DEBUGRELAX console.log("=== End fight ===");
         });
       });
     } while (again);
