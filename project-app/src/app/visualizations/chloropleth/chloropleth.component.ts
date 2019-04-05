@@ -34,6 +34,9 @@ export class ChloroplethComponent implements OnInit {
   private minimum: number;
   private maximum: number;
   private tooltip: any;
+  private DEFAULT_YEAR = "2014";
+  private years = ["2014", "2015", "2016", "2017"]
+  currentYear: string;
 
   async ngOnInit() {
     // prepare usa map
@@ -53,16 +56,15 @@ export class ChloroplethComponent implements OnInit {
     this.countiesIdNames = await d3.json("./../../../../extract/id-formatting/counties-id.json");
     this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
 
-    const DEFAULT_YEAR = "2014";
     // states
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
-    this.updateJsonMapForStates(DEFAULT_YEAR);
+    this.currentYear = this.DEFAULT_YEAR;
+    this.updateJsonMapForStates(this.currentYear);
     this.type = MapType.State;
     this.buildMap(this.tooltip, this.type);
     // counties
     this.countiesMap = topoJson.feature(this.us, this.us.objects.counties).features;
-    this.updateJsonMapForCounties(DEFAULT_YEAR);
-
+    this.updateJsonMapForCounties(this.currentYear);
     this.buildLegend();
   }
 
@@ -84,7 +86,6 @@ export class ChloroplethComponent implements OnInit {
         return d3.interpolatePuBu(d.properties.value);
       })
       .on("mouseover", function (d, i) {
-        console.log(d3.interpolateBlues(d.properties.value))
         d3.select("#map").select("svg").selectAll("path").style("opacity", 0.1);
         d3.select(this).style("opacity", 1);
       })
@@ -112,7 +113,9 @@ export class ChloroplethComponent implements OnInit {
       .attr("height", this.height);
   }
 
-  public changeYear(year: string) {
+  public changeYear(year: string, isAnimation : boolean) {
+    if(!isAnimation)
+      this.currentYear = year; 
     if (this.type === MapType.State) {
       this.updateJsonMapForStates(year);
       this.buildMap(this.tooltip, this.type);
@@ -156,13 +159,28 @@ export class ChloroplethComponent implements OnInit {
     });
   }
 
+  async animate() {
+    for (let i = 0; i < this.years.length; i++) {
+      const year = this.years[i];
+      await this.delay(1000);
+      console.log(year);
+      this.changeYear(year, true);      
+    }
+    console.log("reset year back to " + this.currentYear);
+    this.changeYear(this.currentYear, false);
+  }
+
+  private delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   private buildLegend(): void {
     const key = d3.select("#legend1")
       .append("svg")
       .attr("width", 25)
       .attr("height", 500);
 
-      var legend = key.append("defs")
+    var legend = key.append("defs")
       .append("svg:linearGradient")
       .attr("id", "gradient")
       .attr("x1", "100%")
