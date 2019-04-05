@@ -1,12 +1,10 @@
 
 // TODO:
-// - tooltip
-// - légende : ticks (incidents par 1000 habitants), top100/bottom100
-// - Improve style
-// - Modif données pour essayer d'avoir les grandes villes manquantes
-// - Optimization ?
-// - Highlight grandes villes ?
-// - Test relax meilleur ?
+// - merger les 2 graphes en 1 seul
+// - fit hauteur page
+// - merger les villes qui s'overlapent. Réfléchir liste et tooltip dans ce cas (hover only nom ville ?)
+// - séparation top 50 / bottom 50
+// - légende : ticks (incidents par 1000 habitants)
 
 import { Component, OnInit } from "@angular/core";
 import * as d3 from "d3";
@@ -14,6 +12,7 @@ import d3Tip from "d3-tip";
 import { max } from "d3";
 
 import { DataByCity, City, Incident, IncidentJson } from "../../data-by-city.model";
+import { enterView } from "@angular/core/src/render3/instructions";
 
 @Component({
   selector: "app-slope-chart",
@@ -22,10 +21,10 @@ import { DataByCity, City, Incident, IncidentJson } from "../../data-by-city.mod
 })
 export class SlopeChartComponent implements OnInit {
   // Config stuff
-  private static readonly margin = { top: 80, right: 160, bottom: 40, left: 160 };
+  private static readonly margin = { top: 80, right: 320, bottom: 40, left: 320 };
 
-  private static readonly width = 550 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
-  private static readonly height = 4000 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
+  private static readonly width = 450;
+  private static readonly height = 900 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
 
   private static readonly config = {
     xOffset: 0,
@@ -41,10 +40,11 @@ export class SlopeChartComponent implements OnInit {
     labelGroupOffset: 5,
     labelKeyOffset: 15,
     radius: 4,
-    unfocusOpacity: 0.3
+    circleUnfocusColor: "#bbb",
+    slopeLineUnfocusColor: "#bbb"
   };
 
-  private static readonly nbCitiesToDisplay = 50;
+  private static readonly nbCitiesToDisplay = 20;
 
   public loaded = false;
   private data: Incident[];
@@ -74,7 +74,7 @@ export class SlopeChartComponent implements OnInit {
     });
 
 
-    d3.json("../../citypop.json").then((data: City[]) => {
+    d3.json("../../countypop.json").then((data: City[]) => {
       this.citiesPopulationData = data;
       this.finishLoading();
     });
@@ -97,8 +97,7 @@ export class SlopeChartComponent implements OnInit {
         return;
       }
 
-      const cleanCityName: string = incident.city_or_county.split(" (", 1)[0];
-
+      const cleanCityName: string = incident.city_or_county;
       // If the city exist in our city population dataset
       let cityFromPopulationDataset: City;
       if (cityFromPopulationDataset = this.citiesPopulationData.find(d => d.city === cleanCityName && d.state === incident.state)) {
@@ -146,7 +145,6 @@ export class SlopeChartComponent implements OnInit {
 
   private initialization() {
     this.createSlopeChart(this.dataByCityManyIncidents, "slope-chart-1");
-    this.createSlopeChart(this.dataByCityFewIncidents, "slope-chart-2");
   }
 
   private createSlopeChart(data: DataByCity[], svgId: string) {
@@ -192,15 +190,17 @@ export class SlopeChartComponent implements OnInit {
       .enter()
       .append("g")
       .attr("class", "slope-group")
-      .attr("opacity", SlopeChartComponent.config.unfocusOpacity)
+      .attr("opacity", 1.0)
       .on("mouseover", function (d) {
-        d3.select(this).attr("opacity", 1);
+        d3.select(this).selectAll("line").attr("stroke", "black");
+        d3.select(this).selectAll("g").selectAll("circle").attr("stroke", "black");
         tip.show(d, this)
           .style("left", (d3.event.pageX - 140) + "px")
           .style("top", (d3.event.pageY - 150) + "px");
       })
       .on("mouseout", function (d) {
-        d3.select(this).attr("opacity", SlopeChartComponent.config.unfocusOpacity);
+        d3.select(this).selectAll("line").attr("stroke", SlopeChartComponent.config.slopeLineUnfocusColor);
+        d3.select(this).selectAll("g").selectAll("circle").attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
         tip.hide(d);
       });
 
@@ -213,20 +213,18 @@ export class SlopeChartComponent implements OnInit {
 
     // Right groups
     const rightSlopeGroups = slopeGroups.append("g")
-      .attr("class", "slope-groups-left")
+      .attr("class", "slope-groups-right")
       .each(d => { d.yRightPosition = yScale(d.incidentRatio2017); });
 
     // Relax y positions to avoid labels and circles overlapping
-    const heightAdjustLeft = this.relax(leftSlopeGroups, "yLeftPosition");
-    const heightAdjustRight = this.relax(rightSlopeGroups, "yRightPosition");
-
-    // Maximum height value might need a little adjustment after relax
-    const heightAdjustFinal = max([heightAdjustLeft, heightAdjustRight]);
+    this.relax(leftSlopeGroups, "yLeftPosition");
+    this.relax(rightSlopeGroups, "yRightPosition");
 
     // Draw left circles
     leftSlopeGroups.append("circle")
       .attr("r", SlopeChartComponent.config.radius)
-      .attr("cy", d => d.yLeftPosition);
+      .attr("cy", d => d.yLeftPosition)
+      .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
     // Draw left labels
     leftSlopeGroups.append("g")
@@ -243,7 +241,8 @@ export class SlopeChartComponent implements OnInit {
     rightSlopeGroups.append("circle")
       .attr("r", SlopeChartComponent.config.radius)
       .attr("cx", SlopeChartComponent.config.width)
-      .attr("cy", d => d.yRightPosition);
+      .attr("cy", d => d.yRightPosition)
+      .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
     // Draw right labels
     rightSlopeGroups.append("g")
@@ -267,7 +266,7 @@ export class SlopeChartComponent implements OnInit {
       .attr("dy", -SlopeChartComponent.margin.top / 2)
       .text(SlopeChartComponent.config.leftTitle);
 
-    // Left (2017)
+    // Right (2017)
     titles.append("text")
       .attr("x", SlopeChartComponent.config.width)
       .attr("dx", 10)
@@ -280,11 +279,11 @@ export class SlopeChartComponent implements OnInit {
 
     borderLines.append("line")
       .attr("x1", 0).attr("y1", 0)
-      .attr("x2", 0).attr("y2", SlopeChartComponent.config.height + heightAdjustFinal);
+      .attr("x2", 0).attr("y2", SlopeChartComponent.config.height/* + heightAdjustFinal*/);
 
     borderLines.append("line")
       .attr("x1", SlopeChartComponent.width).attr("y1", 0)
-      .attr("x2", SlopeChartComponent.width).attr("y2", SlopeChartComponent.config.height + heightAdjustFinal);
+      .attr("x2", SlopeChartComponent.width).attr("y2", SlopeChartComponent.config.height/* + heightAdjustFinal*/);
 
     // Draw slope lines
     slopeGroups.append("line")
@@ -292,7 +291,8 @@ export class SlopeChartComponent implements OnInit {
       .attr("x1", 0)
       .attr("y1", d => d.yLeftPosition)
       .attr("x2", SlopeChartComponent.config.width)
-      .attr("y2", d => d.yRightPosition);
+      .attr("y2", d => d.yRightPosition)
+      .attr("stroke", SlopeChartComponent.config.slopeLineUnfocusColor);
   }
 
   private formatRatio(ratio: number): string {
@@ -301,16 +301,15 @@ export class SlopeChartComponent implements OnInit {
 
   // Function to reposition an array selection of slope groups (in the y-axis)
   private relax(slopeGroups: d3.Selection<SVGGElement, DataByCity, SVGGElement, {}>, position: string) {
-    let heightAdjust = 0;
 
     let again: boolean;
     do {
       again = false;
 
-      slopeGroups.each((d1, i) => {
+      slopeGroups.each((d1) => {
         const y1 = d1[position];
 
-        slopeGroups.each((d2, j) => {
+        slopeGroups.each((d2) => {
           if (d1.cityName === d2.cityName && d1.stateName === d2.stateName) {
             return;
           }
@@ -319,22 +318,19 @@ export class SlopeChartComponent implements OnInit {
           const deltaY = y1 - y2;
 
           // If enough space, dont't need to relax
-          if (Math.abs(deltaY) > SlopeChartComponent.config.labelPositioning.spacing) {
+          if (Math.abs(deltaY) > SlopeChartComponent.config.labelPositioning.spacing || deltaY === 0) {
             return;
           }
 
           again = true;
-          const sign = deltaY > 0 ? 1 : -1;
-          const adjust = sign * SlopeChartComponent.config.labelPositioning.alpha;
-          d1[position] = y1 + adjust;
-          d2[position] = y2 - adjust;
 
-          // We might need to adjust the maximum height value
-          heightAdjust += d1[position] > SlopeChartComponent.config.height + heightAdjust ? adjust : 0;
+          const sign = deltaY > 0 ? 1 : -1;
+          const adjust = sign * deltaY / 2; 
+          
+          d1[position] = y1 + adjust;
+          d2[position] = d1[position];
         });
       });
     } while (again);
-
-    return heightAdjust;
   }
 }
