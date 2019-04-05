@@ -33,7 +33,7 @@ export class SlopeChartComponent implements OnInit {
     height: SlopeChartComponent.height,
     labelPositioning: {
       alpha: 0.7,
-      spacing: 16
+      spacing: 14
     },
     leftTitle: "2014",
     rightTitle: "2017",
@@ -50,7 +50,8 @@ export class SlopeChartComponent implements OnInit {
   private data: Incident[];
   private citiesPopulationData: City[];
   private dataByCityManyIncidents: DataByCity[];
-  private dataByCityFewIncidents: DataByCity[];
+  private cityGroupsLeft: number[][];
+  private cityGroupsRight: number[][];
 
   ngOnInit() {
     const parseTime = d3.timeParse("%Y-%m-%d");
@@ -113,7 +114,9 @@ export class SlopeChartComponent implements OnInit {
             incidentNumber2014: 0,
             incidentNumber2017: 0,
             yLeftPosition: 0,
-            yRightPosition: 0
+            yRightPosition: 0,
+            groupIndexLeft: -1,
+            groupIndexRight: -1
           };
           dataByCity.push(city);
         }
@@ -135,8 +138,7 @@ export class SlopeChartComponent implements OnInit {
     // On trie dans l'ordre croissant du nomber d'incidents en 2014
     dataByCity.sort((a, b) => a.incidentNumber2014 - b.incidentNumber2014);
 
-    // Populate sub arrays
-    this.dataByCityFewIncidents = dataByCity.slice(0, SlopeChartComponent.nbCitiesToDisplay);
+    // Populate sub array
     this.dataByCityManyIncidents = dataByCity.slice(dataByCity.length - SlopeChartComponent.nbCitiesToDisplay, dataByCity.length);
 
     this.data = []; // free up memory
@@ -216,9 +218,24 @@ export class SlopeChartComponent implements OnInit {
       .attr("class", "slope-groups-right")
       .each(d => { d.yRightPosition = yScale(d.incidentRatio2017); });
 
+    // Init city groups
+    this.cityGroupsLeft = [];
+    this.cityGroupsRight = [];
+    for (let i = 0 ; i < this.dataByCityManyIncidents.length ; i++)
+    {
+      this.cityGroupsLeft[i] = [];
+      this.cityGroupsLeft[i][0] = i;
+
+      this.cityGroupsRight[i] = [];
+      this.cityGroupsRight[i][0] = i;
+
+      this.dataByCityManyIncidents[i].groupIndexLeft = i;
+      this.dataByCityManyIncidents[i].groupIndexRight = i;
+    }
+
     // Relax y positions to avoid labels and circles overlapping
-    this.relax(leftSlopeGroups, "yLeftPosition");
-    this.relax(rightSlopeGroups, "yRightPosition");
+    this.relax(leftSlopeGroups, "yLeftPosition", "groupIndexLeft", this.cityGroupsLeft);
+    this.relax(rightSlopeGroups, "yRightPosition", "groupIndexRight", this.cityGroupsRight);
 
     // Draw left circles
     leftSlopeGroups.append("circle")
@@ -254,6 +271,19 @@ export class SlopeChartComponent implements OnInit {
       .attr("dy", 3)
       .attr("text-anchor", "start")
       .text(d => d.cityName);
+
+    // for(let oneCity of this.dataByCityManyIncidents)
+    // {
+    //   svg.append("g")
+    //     .attr("class", "slope-label-right")
+    //     .append("text")
+    //     .attr("x", SlopeChartComponent.width + SlopeChartComponent.config.labelGroupOffset)
+    //     .attr("y", oneCity.yRightPosition)
+    //     .attr("dx", SlopeChartComponent.config.labelKeyOffset)
+    //     .attr("dy", 3)
+    //     .attr("text-anchor", "start")
+    //     .text(oneCity.cityName);
+    // }
 
     // Draw titles
     const titles = svg.append("g")
@@ -300,16 +330,16 @@ export class SlopeChartComponent implements OnInit {
   }
 
   // Function to reposition an array selection of slope groups (in the y-axis)
-  private relax(slopeGroups: d3.Selection<SVGGElement, DataByCity, SVGGElement, {}>, position: string) {
+  private relax(slopeGroups: d3.Selection<SVGGElement, DataByCity, SVGGElement, {}>, position: string, groupIndex: string, cityGroups: number[][]) {
 
     let again: boolean;
     do {
       again = false;
 
-      slopeGroups.each((d1) => {
-        const y1 = d1[position];
+      slopeGroups.each((d1, i) => {
+        let y1 = d1[position];
 
-        slopeGroups.each((d2) => {
+        slopeGroups.each((d2, j) => {
           if (d1.cityName === d2.cityName && d1.stateName === d2.stateName) {
             return;
           }
@@ -322,13 +352,44 @@ export class SlopeChartComponent implements OnInit {
             return;
           }
 
+          //DEBUGRELAX console.log("=== Start fight ("+ groupIndex +") ===");
+          //DEBUGRELAX console.log(d1["cityName"] + " ; " + d2["cityName"]);
+          //DEBUGRELAX console.log(d1[groupIndex] + " ; " + d2[groupIndex]);
+          //DEBUGRELAX console.log(y1 + " ; " + y2); 
+
           again = true;
 
           const sign = deltaY > 0 ? 1 : -1;
-          const adjust = sign * deltaY / 2; 
-          
-          d1[position] = y1 + adjust;
-          d2[position] = d1[position];
+          const adjust = sign * Math.abs(deltaY) / 2; 
+          const newPos = y1 - adjust;
+          y1 = newPos;
+
+          // Update d1 group pos
+          for(let cityIndex of cityGroups[d1[groupIndex]])
+          {
+            //DEBUGRELAX console.log(this.dataByCityManyIncidents[cityIndex]["cityName"] + " <- " + newPos);
+            this.dataByCityManyIncidents[cityIndex][position] = newPos;
+          }
+
+          const oldD2Index = d2[groupIndex];
+
+          // d1 eats d2
+          while(cityGroups[oldD2Index].length > 0)
+          {
+            // Move all city index from old d2 group into d1 group
+            let migratingCityIndex = cityGroups[oldD2Index].pop();
+            cityGroups[d1[groupIndex]].push(migratingCityIndex);
+            
+            // Update city's group index
+            //DEBUGRELAX console.log(this.dataByCityManyIncidents[migratingCityIndex]["cityName"] + " goes from " + oldD2Index + " to " + d1[groupIndex]);
+            this.dataByCityManyIncidents[migratingCityIndex][groupIndex] = d1[groupIndex];
+            // Update city's position
+            //DEBUGRELAX console.log(this.dataByCityManyIncidents[migratingCityIndex]["cityName"] + " <- " + newPos);
+            this.dataByCityManyIncidents[migratingCityIndex][position] = newPos;
+            
+            //DEBUGRELAX console.log("Remaining length : " + cityGroups[oldD2Index].length);
+          }
+          //DEBUGRELAX console.log("=== End fight ===");
         });
       });
     } while (again);

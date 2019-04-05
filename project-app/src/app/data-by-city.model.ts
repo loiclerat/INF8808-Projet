@@ -8,6 +8,8 @@ export interface DataByCity {
   incidentNumber2017: number;
   yLeftPosition: number;
   yRightPosition: number;
+  groupIndexLeft: number;
+  groupIndexRight: number;
 }
 
 export interface City {
