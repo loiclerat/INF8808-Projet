@@ -1,73 +1,70 @@
-<div style="padding: 2rem 2rem; text-align: center">
-  <h3 class="display-5">Répartition géographique</h3>
-</div>
-<div lass="container">
-  <div class="row">
-    <div class="col-2">
-
-      <p class="lead" style="font-size: 16px">Quelle est la répartition géographique des incidents par armes à feu aux
-        États-Unis?
-        <br>
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
-        standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make
-        a
-        type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
-        remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing
-        Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions
-        of
-        Lorem Ipsum.
-      </p>
+<div class="mapBlock">
+  <div style="padding: 2rem 2rem; text-align: center">
+    <h3 class="display-5">Répartition géographique</h3>
+    <div>
+      Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
+      standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a
+      type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
+      remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing
+      Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions
+      of Lorem Ipsum.
     </div>
-    <div class="col-9">
-      <div style="text-align: center" id="map">
-      </div>
-    </div>
-    <div class="col-1">
-      <h6>Régions</h6>
-      <div class="form-group">
-        <div class="custom-control custom-radio">
-          <input (click)="changeMap(0)" type="radio" id="customRadio1" name="customRadio" class="custom-control-input"
-            checked="">
-          <label class="custom-control-label" for="customRadio1">États</label>
-        </div>
-        <div class="custom-control custom-radio">
-          <input (click)="changeMap(1)" type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
-          <label class="custom-control-label" for="customRadio2">Comtés</label>
+  </div>
+  <div lass="container">
+    <div class="row">
+      <div class="col-10">
+        <div style="text-align: center; display: flex;" id="map">
+          <div>
+            <div id="legende-max">{{this.maximum}}</div>
+            <div id="legend1"></div>
+            <div id="legende-min">0</div>
+          </div>
         </div>
       </div>
-      <h6>Anné</h6>
-      <div class="form-group">
-        <div class="custom-control custom-radio">
-          <input (click)="changeYear('2014')" type="radio" id="customRadio1_2" name="customRadio2"
-            class="custom-control-input" checked="">
-          <label class="custom-control-label" for="customRadio1_2">2014</label>
+      <div class="col-1">
+        <h6>Régions</h6>
+        <div class="form-group">
+          <div class="custom-control custom-radio">
+            <input (click)="changeMap(0)" type="radio" id="customRadio1" name="customRadio" class="custom-control-input"
+              checked="">
+            <label class="custom-control-label" for="customRadio1">États</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input (click)="changeMap(1)" type="radio" id="customRadio2" name="customRadio"
+              class="custom-control-input">
+            <label class="custom-control-label" for="customRadio2">Comtés</label>
+          </div>
         </div>
-        <div class="custom-control custom-radio">
-          <input (click)="changeYear('2015')" type="radio" id="customRadio2_2" name="customRadio2"
-            class="custom-control-input">
-          <label class="custom-control-label" for="customRadio2_2">2015</label>
-        </div>
-        <div class="custom-control custom-radio">
-          <input (click)="changeYear('2016')" type="radio" id="customRadio3_3" name="customRadio2"
-            class="custom-control-input">
-          <label class="custom-control-label" for="customRadio3_3">2016</label>
-        </div>
-        <div class="custom-control custom-radio">
-          <input (click)="changeYear('2017')" type="radio" id="customRadio4_4" name="customRadio2"
-            class="custom-control-input">
-          <label class="custom-control-label" for="customRadio4_4">2017</label>
-        </div>
-      </div>
-      <div>
-        <div id="legend1" style="text-align: center" width="200" height="50"></div>
-        <div class="parent" style="margin-right: auto; align-items: center; display: flex;">
-          <div id="legende-min">{{this.minimum}}</div>
-          <div id="legende-max">{{this.maximum}}</div>
+        <h6>Anné</h6>
+        <div class="form-group">
+          <div class="custom-control custom-radio">
+            <input (click)="changeYear('2014')" type="radio" id="customRadio1_2" name="customRadio2"
+              class="custom-control-input" checked="">
+            <label class="custom-control-label" for="customRadio1_2">2014</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input (click)="changeYear('2015')" type="radio" id="customRadio2_2" name="customRadio2"
+              class="custom-control-input">
+            <label class="custom-control-label" for="customRadio2_2">2015</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input (click)="changeYear('2016')" type="radio" id="customRadio3_3" name="customRadio2"
+              class="custom-control-input">
+            <label class="custom-control-label" for="customRadio3_3">2016</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input (click)="changeYear('2017')" type="radio" id="customRadio4_4" name="customRadio2"
+              class="custom-control-input">
+            <label class="custom-control-label" for="customRadio4_4">2017</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input (click)="changeYear('total')" type="radio" id="customRadio5_5" name="customRadio2"
+              class="custom-control-input">
+            <label class="custom-control-label" for="customRadio5_5">Total</label>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  <div id="tooltipMap"></div>
 </div>
-
-
-<div id="tooltipMap"></div>
