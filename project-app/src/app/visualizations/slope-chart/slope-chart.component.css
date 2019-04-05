@@ -28,3 +28,7 @@ h3 {
 .hidden {
   display: none;
 }
+
+div {
+  text-align: center;
+}

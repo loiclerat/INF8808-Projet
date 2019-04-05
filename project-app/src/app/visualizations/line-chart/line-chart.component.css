@@ -1,10 +1,5 @@
-.container {
+*{
   text-align: center;
-  width: 1100px;
-}
-
-p {
-  margin: 0px 60px;
 }
 
 h3 {
@@ -20,8 +15,11 @@ h3 {
   position: absolute;
   width: max-content;
   font-size: 12px;
-  color: white !important;
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #003182;
+  border: 1px solid black;
+}
+
+span {
+  font-weight: bold;
 }

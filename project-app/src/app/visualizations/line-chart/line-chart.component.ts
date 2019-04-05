@@ -12,12 +12,62 @@ import { DataByState } from "../../data-by-state.model";
 export class LineChartComponent implements OnInit {
   private dataByState: DataByState[];
   private readonly NUMBER_OF_MONTHS = 48;
+  private readonly constantStates = [
+    "Montana",
+    "Hawaii",
+    "Alabama",
+    "Mississippi",
+    "Arizona",
+    "New Mexico",
+    "Arkansas",
+    "Oklahoma",
+    "Nevada",
+    "Delaware",
+    "Utah",
+    "Kansas",
+    "Colorado",
+    "West Virginia",
+    "Indiana",
+    "Oregon",
+    "District of Columbia",
+    "Iowa",
+    "Connecticut",
+    "Wyoming",
+    "Rhode Island",
+    "Idaho",
+    "South Dakota",
+    "New Hampshire",
+    "Nebraska",
+    "Maine",
+    "Minnesota",
+    "Washington",
+    "North Dakota",
+    "Alaska"
+  ];
 
   ngOnInit() {
     d3.json("../../data-by-state.json").then((data: DataByState[]) => {
       this.dataByState = data;
       this.initialization();
     });
+  }
+
+  public showState(state: string) {
+    d3.select("#line-chart").selectAll("path.line")
+      .attr("stroke-width", (d: DataByState) => d.state === state ? 10 : 1)
+      .style("opacity", (d: DataByState) => d.state === state ? 1 : 0.3);
+  }
+
+  public showConstantState() {
+    d3.select("#line-chart").selectAll("path.line")
+      .attr("stroke-width", (d: DataByState) => this.constantStates.indexOf(d.state) !== -1 ? 3 : 1)
+      .style("opacity", (d: DataByState) => this.constantStates.indexOf(d.state) !== -1 ? 1 : 0.3);
+  }
+
+  public hideState() {
+    d3.select("#line-chart").selectAll("path.line")
+      .style("opacity", 1)
+      .attr("stroke-width", 1);
   }
 
   private initialization() {
@@ -89,7 +139,7 @@ export class LineChartComponent implements OnInit {
     return d3.line()
       .x((d: any, i: number) => x(i))
       .y((d: any) => y(d))
-      .curve(d3.curveBasisOpen);
+      .curve(d3.curveCardinal);
   }
 
   private domainColor(color: d3.ScaleOrdinal<string, string>) {
@@ -120,9 +170,9 @@ export class LineChartComponent implements OnInit {
       .attr("stroke", d => color(d.state))
       .attr("d", d => line(d.incidents_by_month))
       .attr("clip-path", "url(#clip)")
-      .attr("class", d => d.state)
+      .attr("class", d => d.state + " line")
       .on("mouseover", function (d) {
-        g.selectAll("path").style("opacity", 0.5);
+        g.selectAll("path").style("opacity", 0.3);
         d3.select(this).style("opacity", 1);
         d3.select(this).attr("stroke-width", 10);
 
@@ -147,8 +197,8 @@ export class LineChartComponent implements OnInit {
       .style("left", d3.event.pageX + "px")
       .style("top", d3.event.pageY + "px")
       .html(
-        "<p>État : " + d.state + "</p>" +
-        "<p>Incidents : " + Math.round(yScale.invert(d3.mouse(self)[1])) + "</p>"
+        "État : " + d.state + "<br>" +
+        "Incidents : " + Math.round(yScale.invert(d3.mouse(self)[1]))
       );
   }
 
