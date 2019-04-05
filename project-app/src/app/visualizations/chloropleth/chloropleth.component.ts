@@ -58,14 +58,17 @@ export class ChloroplethComponent implements OnInit {
     this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
 
     const DEFAULT_YEAR = "2014";
+
+    //counties
+    this.countiesMap = topoJson.feature(this.us, this.us.objects.counties).features;
+    this.updateJsonMapForCounties(DEFAULT_YEAR);
+
     //states
     this.statesMap = topoJson.feature(this.us, this.us.objects.states).features;
     this.updateJsonMapForStates(DEFAULT_YEAR);
     this.type = MapType.State;
     this.buildMap(this.tooltip, this.type);
-    //counties
-    this.countiesMap = topoJson.feature(this.us, this.us.objects.counties).features;
-    this.updateJsonMapForCounties(DEFAULT_YEAR);
+
 
     this.buildLegend();
   }
