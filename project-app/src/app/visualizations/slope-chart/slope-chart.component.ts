@@ -12,6 +12,7 @@ import d3Tip from "d3-tip";
 import { max } from "d3";
 
 import { DataByCity, City, Incident, IncidentJson } from "../../data-by-city.model";
+import { enterView } from "@angular/core/src/render3/instructions";
 
 @Component({
   selector: "app-slope-chart",
@@ -20,10 +21,10 @@ import { DataByCity, City, Incident, IncidentJson } from "../../data-by-city.mod
 })
 export class SlopeChartComponent implements OnInit {
   // Config stuff
-  private static readonly margin = { top: 80, right: 160, bottom: 40, left: 160 };
+  private static readonly margin = { top: 80, right: 320, bottom: 40, left: 320 };
 
-  private static readonly width = 800 - SlopeChartComponent.margin.left - SlopeChartComponent.margin.right;
-  private static readonly height = 700 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
+  private static readonly width = 450;
+  private static readonly height = 900 - SlopeChartComponent.margin.top - SlopeChartComponent.margin.bottom;
 
   private static readonly config = {
     xOffset: 0,
@@ -43,7 +44,7 @@ export class SlopeChartComponent implements OnInit {
     slopeLineUnfocusColor: "#bbb"
   };
 
-  private static readonly nbCitiesToDisplay = 50;
+  private static readonly nbCitiesToDisplay = 20;
 
   public loaded = false;
   private data: Incident[];
@@ -212,7 +213,7 @@ export class SlopeChartComponent implements OnInit {
 
     // Right groups
     const rightSlopeGroups = slopeGroups.append("g")
-      .attr("class", "slope-groups-left")
+      .attr("class", "slope-groups-right")
       .each(d => { d.yRightPosition = yScale(d.incidentRatio2017); });
 
     // Relax y positions to avoid labels and circles overlapping
@@ -300,16 +301,15 @@ export class SlopeChartComponent implements OnInit {
 
   // Function to reposition an array selection of slope groups (in the y-axis)
   private relax(slopeGroups: d3.Selection<SVGGElement, DataByCity, SVGGElement, {}>, position: string) {
-    let heightAdjust = 0;
 
     let again: boolean;
     do {
       again = false;
 
-      slopeGroups.each((d1, i) => {
+      slopeGroups.each((d1) => {
         const y1 = d1[position];
 
-        slopeGroups.each((d2, j) => {
+        slopeGroups.each((d2) => {
           if (d1.cityName === d2.cityName && d1.stateName === d2.stateName) {
             return;
           }
@@ -318,21 +318,19 @@ export class SlopeChartComponent implements OnInit {
           const deltaY = y1 - y2;
 
           // If enough space, dont't need to relax
-          if (Math.abs(deltaY) > SlopeChartComponent.config.labelPositioning.spacing || deltaY == 0) {
+          if (Math.abs(deltaY) > SlopeChartComponent.config.labelPositioning.spacing || deltaY === 0) {
             return;
           }
 
           again = true;
-          
+
           const sign = deltaY > 0 ? 1 : -1;
           const adjust = sign * deltaY / 2; 
           
           d1[position] = y1 + adjust;
-          d2[position] = y2 - adjust;
+          d2[position] = d1[position];
         });
       });
     } while (again);
-
-    return heightAdjust;
   }
 }
