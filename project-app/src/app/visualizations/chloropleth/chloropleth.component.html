@@ -9,11 +9,11 @@
       Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions
       of Lorem Ipsum.
     </div>
-    <button class="btn btn-primary" (click)="animate()">Animate</button>
   </div>
   <div lass="container">
     <div class="row">
-      <div class="col-10">
+      <div class="col-10" style="text-align: center">
+        <h2>{{this.animationYear}}</h2>
         <div style="text-align: center; display: flex;" id="map">
           <div>
             <div id="legende-max">{{this.maximum}}</div>
@@ -63,6 +63,7 @@
               class="custom-control-input">
             <label class="custom-control-label" for="customRadio5_5">Total</label>
           </div>
+          <button class="btn btn-primary" (click)="animate()">Animate</button>
         </div>
       </div>
     </div>

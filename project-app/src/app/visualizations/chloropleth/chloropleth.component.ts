@@ -34,9 +34,12 @@ export class ChloroplethComponent implements OnInit {
   private minimum: number;
   private maximum: number;
   private tooltip: any;
+
   private DEFAULT_YEAR = "2014";
   private years = ["2014", "2015", "2016", "2017"]
-  currentYear: string;
+  private currentYear: string;
+  private animationYear: string;
+  private isAnimationRunning = false;
 
   async ngOnInit() {
     // prepare usa map
@@ -113,9 +116,9 @@ export class ChloroplethComponent implements OnInit {
       .attr("height", this.height);
   }
 
-  public changeYear(year: string, isAnimation : boolean) {
-    if(!isAnimation)
-      this.currentYear = year; 
+  public changeYear(year: string, isAnimation: boolean) {
+    if (!isAnimation)
+      this.currentYear = year;
     if (this.type === MapType.State) {
       this.updateJsonMapForStates(year);
       this.buildMap(this.tooltip, this.type);
@@ -160,14 +163,17 @@ export class ChloroplethComponent implements OnInit {
   }
 
   async animate() {
-    for (let i = 0; i < this.years.length; i++) {
-      const year = this.years[i];
-      await this.delay(1000);
-      console.log(year);
-      this.changeYear(year, true);      
+    if (!this.isAnimationRunning) {
+      this.isAnimationRunning = true;
+      for (let i = 0; i < this.years.length; i++) {
+        this.animationYear = this.years[i];
+        await this.delay(700);
+        this.changeYear(this.animationYear, true);
+      }
+      this.animationYear = "";
+      this.changeYear(this.currentYear, false);
+      this.isAnimationRunning = false;
     }
-    console.log("reset year back to " + this.currentYear);
-    this.changeYear(this.currentYear, false);
   }
 
   private delay(ms: number) {
