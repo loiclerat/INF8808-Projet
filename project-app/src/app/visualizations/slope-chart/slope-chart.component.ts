@@ -389,14 +389,23 @@ export class SlopeChartComponent implements OnInit {
       .attr("y2", d => d.yRightPosition)
       .attr("stroke", SlopeChartComponent.config.slopeLineUnfocusColor);
 
-    // Draw legend
+    // Draw legend up
     svg.append("g")
     .attr("class", "slope-legend")
     .append("text")
       .attr("x", SlopeChartComponent.width / 2)
       .attr("y", yScale(y1Max))
       .attr("text-anchor", "middle")
-      .text("blabla");
+      .text(this.formatRatio(y1Max) + " incidents /1000 hab.");
+
+    // Draw legend down
+    svg.append("g")
+    .attr("class", "slope-legend")
+    .append("text")
+      .attr("x", SlopeChartComponent.width / 2)
+      .attr("y", yScale(y1Min) + 20)
+      .attr("text-anchor", "middle")
+      .text(this.formatRatio(y1Min) + " incidents /1000 hab.");
   }
 
   private formatRatio(ratio: number): string {
