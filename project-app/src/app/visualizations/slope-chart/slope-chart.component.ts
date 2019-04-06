@@ -1,18 +1,8 @@
-
-// TODO:
-// - merger les 2 graphes en 1 seul
-// - fit hauteur page
-// - merger les villes qui s'overlapent. Réfléchir liste et tooltip dans ce cas (hover only nom ville ?)
-// - séparation top 50 / bottom 50
-// - légende : ticks (incidents par 1000 habitants)
-
 import { Component, OnInit } from "@angular/core";
 import * as d3 from "d3";
 import d3Tip from "d3-tip";
-import { max } from "d3";
 
 import { DataByCity, City, Incident, IncidentJson } from "../../data-by-city.model";
-import { enterView } from "@angular/core/src/render3/instructions";
 
 @Component({
   selector: "app-slope-chart",
