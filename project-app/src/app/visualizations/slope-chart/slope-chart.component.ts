@@ -398,6 +398,15 @@ export class SlopeChartComponent implements OnInit {
       .attr("x2", SlopeChartComponent.config.width)
       .attr("y2", d => d.yRightPosition)
       .attr("stroke", SlopeChartComponent.config.slopeLineUnfocusColor);
+
+    // Draw legend
+    svg.append("g")
+    .attr("class", "slope-legend")
+    .append("text")
+      .attr("x", SlopeChartComponent.width / 2)
+      .attr("y", yScale(y1Max))
+      .attr("text-anchor", "middle")
+      .text("blabla");
   }
 
   private formatRatio(ratio: number): string {
