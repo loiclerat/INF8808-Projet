@@ -2,18 +2,18 @@
   <div style="padding: 2rem 2rem; text-align: center">
     <h2 class="display-5">Répartition géographique</h2>
     <div>
-      Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
-      standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a
-      type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
-      remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing
-      Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions
-      of Lorem Ipsum.
+      Voici le nombre d'incidents cumulés par mois par État et par comtés au cours des années 2014, 2015, 2016 et 2017.
+      Le total de ces quatre années y est également présent. Comme on peut le voir, le nombre d'incidents par état et par 
+      compté reste relativement stable au fil des ans. Cela suggérerait que certaines régions des États-Unis sont généralement 
+      plus touchées par les incidents d'armes à feu que d'autres, sans que cela ne change trop au fil du temps. Les
+      causes des incidents ne seraient donc pas liées à des événements temporels, mais plutôt au contexte plus large 
+      des régions géographiques affectées. 
     </div>
+    <h2>{{this.animationYear}}</h2>
   </div>
   <div lass="container">
     <div class="row">
-      <div class="col-10" style="text-align: center">
-        <h2>{{this.animationYear}}</h2>
+      <div class="col-10">
         <div style="text-align: center; display: flex;" id="map">
           <div>
             <div id="legende-max">{{this.maximum}}</div>
@@ -63,7 +63,9 @@
               class="custom-control-input">
             <label class="custom-control-label" for="customRadio5_5">Total</label>
           </div>
-          <button class="btn btn-primary" (click)="animate()">Animate</button>
+          <br>
+          <h6>Changement durant les années</h6>
+          <button class="btn btn-primary" (click)="animate()" style="margin-top: 5px">Demarrer l'animation</button>
         </div>
       </div>
     </div>
