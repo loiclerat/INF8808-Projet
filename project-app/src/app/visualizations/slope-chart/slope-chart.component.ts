@@ -245,7 +245,7 @@ export class SlopeChartComponent implements OnInit {
       .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
     // Draw left labels concatenated
-    for (let oneGroup of this.cityGroupsLeft) {
+    this.cityGroupsLeft.forEach((oneGroup: number[]) => {
       if (oneGroup.length > 0) {
         svg.append("g")
           .attr("class", "slope-label-right")
@@ -258,17 +258,18 @@ export class SlopeChartComponent implements OnInit {
           .html(() => {
             let htmlString = "";
 
-            for (let cityIndex of oneGroup) {
+            oneGroup.forEach((cityIndex: number) => {
               if (htmlString !== "") {
                 htmlString += ", ";
               }
 
-              htmlString += '<a class="city-label" data-id=' + cityIndex + '>' + this.dataByCityManyIncidents[cityIndex]["cityName"] + '</a>';
-            }
+              htmlString += "<a class='city-label' data-id=" + cityIndex + ">" +
+                this.dataByCityManyIncidents[cityIndex]["cityName"] + "</a>";
+            });
             return htmlString;
           });
       }
-    }
+    });
 
     // Draw right circles
     rightSlopeGroups.append("circle")
@@ -278,7 +279,7 @@ export class SlopeChartComponent implements OnInit {
       .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
     // Draw right labels concatenated
-    for (let oneGroup of this.cityGroupsRight) {
+    this.cityGroupsRight.forEach((oneGroup: number[]) => {
       if (oneGroup.length > 0) {
         // Append svg groups for labels, these are separated from the left/right slope groups
         svg.append("g")
@@ -292,17 +293,18 @@ export class SlopeChartComponent implements OnInit {
           .html(() => {
             let htmlString = "";
 
-            for (let cityIndex of oneGroup) {
-              if (htmlString != "") {
+            oneGroup.forEach((cityIndex: number) => {
+              if (htmlString !== "") {
                 htmlString += ", ";
               }
 
-              htmlString += '<a class="city-label" data-id=' + cityIndex + '>' + this.dataByCityManyIncidents[cityIndex]["cityName"] + '</a>';
-            }
+              htmlString += "<a class='city-label' data-id=" + cityIndex + ">" +
+                this.dataByCityManyIncidents[cityIndex]["cityName"] + "</a>";
+            });
             return htmlString;
           });
       }
-    }
+    });
 
     // Bind labels mouseover behavior
     d3.selectAll(".city-label")
@@ -437,9 +439,9 @@ export class SlopeChartComponent implements OnInit {
           y1 = newPos;
 
           // Update d1 group pos
-          for (let cityIndex of cityGroups[d1[groupIndex]]) {
+          cityGroups[d1[groupIndex]].forEach((cityIndex: number) => {
             this.dataByCityManyIncidents[cityIndex][position] = newPos;
-          }
+          });
 
           const oldD2Index = d2[groupIndex];
 
