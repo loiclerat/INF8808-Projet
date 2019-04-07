@@ -167,7 +167,7 @@ export class SlopeChartComponent implements OnInit {
 
     tip.html((d: DataByCity) => {
       return `<div>Comté: <b> ${d.cityName} </b> <br>
-                Etat: <b> ${d.stateName} </b> <br>
+                État: <b> ${d.stateName} </b> <br>
                 Population: <b> ${d.population} </b> <br>
                 Ratio par 1000 habitants (2014): <b> ${this.formatRatio(d.incidentRatio2014)} </b> <br>
                 Ratio par 1000 habitants (2017): <b> ${this.formatRatio(d.incidentRatio2017)} </b> <br>
@@ -183,7 +183,7 @@ export class SlopeChartComponent implements OnInit {
       .append("g")
       .attr("class", "slope-group")
       .attr("opacity", 1.0)
-      .attr("id", (d, i) => {return "slope-group-" + i})
+      .attr("id", (d, i) => "slope-group-" + i)
       .on("mouseover", function (d) {
         d3.select(this).raise();
 
@@ -201,7 +201,7 @@ export class SlopeChartComponent implements OnInit {
       })
       .on("mouseout", function (d) {
         d3.select(this).selectAll("line").attr("stroke", SlopeChartComponent.config.slopeLineUnfocusColor);
-          
+
         d3.select(this).selectAll("g").selectAll("circle")
           .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
@@ -223,8 +223,7 @@ export class SlopeChartComponent implements OnInit {
     // Init city groups
     this.cityGroupsLeft = [];
     this.cityGroupsRight = [];
-    for (let i = 0 ; i < this.dataByCityManyIncidents.length ; i++)
-    {
+    for (let i = 0; i < this.dataByCityManyIncidents.length; i++) {
       this.cityGroupsLeft[i] = [];
       this.cityGroupsLeft[i][0] = i;
 
@@ -246,10 +245,8 @@ export class SlopeChartComponent implements OnInit {
       .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
     // Draw left labels concatenated
-    for(let oneGroup of this.cityGroupsLeft)
-    {
-      if (oneGroup.length > 0)
-      {
+    for (let oneGroup of this.cityGroupsLeft) {
+      if (oneGroup.length > 0) {
         svg.append("g")
           .attr("class", "slope-label-right")
           .append("text")
@@ -259,18 +256,16 @@ export class SlopeChartComponent implements OnInit {
           .attr("dy", 3)
           .attr("text-anchor", "end")
           .html(() => {
-              let htmlString = "";
+            let htmlString = "";
 
-              for(let cityIndex of oneGroup)
-              {
-                if (htmlString != "")
-                {
-                  htmlString += ", ";
-                }
-
-                htmlString += '<a class="city-label" data-id='+ cityIndex +'>' + this.dataByCityManyIncidents[cityIndex]["cityName"] + '</a>';
+            for (let cityIndex of oneGroup) {
+              if (htmlString !== "") {
+                htmlString += ", ";
               }
-              return htmlString;
+
+              htmlString += '<a class="city-label" data-id=' + cityIndex + '>' + this.dataByCityManyIncidents[cityIndex]["cityName"] + '</a>';
+            }
+            return htmlString;
           });
       }
     }
@@ -283,10 +278,8 @@ export class SlopeChartComponent implements OnInit {
       .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
     // Draw right labels concatenated
-    for(let oneGroup of this.cityGroupsRight)
-    {
-      if (oneGroup.length > 0)
-      {
+    for (let oneGroup of this.cityGroupsRight) {
+      if (oneGroup.length > 0) {
         // Append svg groups for labels, these are separated from the left/right slope groups
         svg.append("g")
           .attr("class", "slope-label-right")
@@ -297,25 +290,23 @@ export class SlopeChartComponent implements OnInit {
           .attr("dy", 3)
           .attr("text-anchor", "start")
           .html(() => {
-              let htmlString = "";
+            let htmlString = "";
 
-              for(let cityIndex of oneGroup)
-              {
-                if (htmlString != "")
-                {
-                  htmlString += ", ";
-                }
-
-                htmlString += '<a class="city-label" data-id='+ cityIndex +'>' + this.dataByCityManyIncidents[cityIndex]["cityName"] + '</a>';
+            for (let cityIndex of oneGroup) {
+              if (htmlString != "") {
+                htmlString += ", ";
               }
-              return htmlString;
+
+              htmlString += '<a class="city-label" data-id=' + cityIndex + '>' + this.dataByCityManyIncidents[cityIndex]["cityName"] + '</a>';
+            }
+            return htmlString;
           });
       }
     }
 
     // Bind labels mouseover behavior
     d3.selectAll(".city-label")
-      .on("mouseover", function(){
+      .on("mouseover", function () {
         // Set text bold
         d3.select(this).attr("style", "font-weight: bold");
 
@@ -323,16 +314,16 @@ export class SlopeChartComponent implements OnInit {
         const cityIndex = d3.select(this).attr("data-id");
 
         // Retrieve corresponding svg group (slope line and circle)
-        const matchingGroups = d3.select("#slope-group-" + cityIndex)
+        const matchingGroups = d3.select("#slope-group-" + cityIndex);
         const domElement: any = matchingGroups.node();
 
         // Create mouseover event
-        const evtOver = document.createEvent( 'Events' );
-        evtOver.initEvent( "mouseover", true, false );
+        const evtOver = document.createEvent("Events");
+        evtOver.initEvent("mouseover", true, false);
 
-        domElement.dispatchEvent( evtOver );
+        domElement.dispatchEvent(evtOver);
       })
-      .on("mouseout", function(){
+      .on("mouseout", function () {
         // Set text normal
         d3.select(this).attr("style", "font-weight: normal");
 
@@ -340,14 +331,14 @@ export class SlopeChartComponent implements OnInit {
         const cityIndex = d3.select(this).attr("data-id");
 
         // Retrieve corresponding svg group (slope line and circle)
-        const matchingGroups = d3.select("#slope-group-" + cityIndex)
+        const matchingGroups = d3.select("#slope-group-" + cityIndex);
         const domElement: any = matchingGroups.node();
 
         // Create mouseout event
-        const evtOut = document.createEvent( 'Events' );
-        evtOut.initEvent( "mouseout", true, false );
+        const evtOut = document.createEvent("Events");
+        evtOut.initEvent("mouseout", true, false);
 
-        domElement.dispatchEvent( evtOut );
+        domElement.dispatchEvent(evtOut);
       });
 
     // Draw titles
@@ -391,8 +382,8 @@ export class SlopeChartComponent implements OnInit {
 
     // Draw legend up
     svg.append("g")
-    .attr("class", "slope-legend")
-    .append("text")
+      .attr("class", "slope-legend")
+      .append("text")
       .attr("x", SlopeChartComponent.width / 2)
       .attr("y", yScale(y1Max))
       .attr("text-anchor", "middle")
@@ -400,8 +391,8 @@ export class SlopeChartComponent implements OnInit {
 
     // Draw legend down
     svg.append("g")
-    .attr("class", "slope-legend")
-    .append("text")
+      .attr("class", "slope-legend")
+      .append("text")
       .attr("x", SlopeChartComponent.width / 2)
       .attr("y", yScale(y1Min) + 20)
       .attr("text-anchor", "middle")
@@ -413,7 +404,10 @@ export class SlopeChartComponent implements OnInit {
   }
 
   // Function to reposition an array selection of slope groups (in the y-axis)
-  private relax(slopeGroups: d3.Selection<SVGGElement, DataByCity, SVGGElement, {}>, position: string, groupIndex: string, cityGroups: number[][]) {
+  private relax(slopeGroups: d3.Selection<SVGGElement, DataByCity, SVGGElement, {}>,
+    position: string,
+    groupIndex: string,
+    cityGroups: number[][]) {
 
     let again: boolean;
     do {
@@ -438,25 +432,23 @@ export class SlopeChartComponent implements OnInit {
           again = true;
 
           const sign = deltaY > 0 ? 1 : -1;
-          const adjust = sign * Math.abs(deltaY) / 2; 
+          const adjust = sign * Math.abs(deltaY) / 2;
           const newPos = y1 - adjust;
           y1 = newPos;
 
           // Update d1 group pos
-          for(let cityIndex of cityGroups[d1[groupIndex]])
-          {
+          for (let cityIndex of cityGroups[d1[groupIndex]]) {
             this.dataByCityManyIncidents[cityIndex][position] = newPos;
           }
 
           const oldD2Index = d2[groupIndex];
 
           // d1 eats d2
-          while(cityGroups[oldD2Index].length > 0)
-          {
+          while (cityGroups[oldD2Index].length > 0) {
             // Move all city index from old d2 group into d1 group
-            let migratingCityIndex = cityGroups[oldD2Index].pop();
+            const migratingCityIndex = cityGroups[oldD2Index].pop();
             cityGroups[d1[groupIndex]].push(migratingCityIndex);
-            
+
             // Update city's group index
             this.dataByCityManyIncidents[migratingCityIndex][groupIndex] = d1[groupIndex];
             // Update city's position
