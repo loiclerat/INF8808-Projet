@@ -41,16 +41,3 @@ p {
   border-bottom-width: 4px;
   border-right-width: 4px;
 }
-
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #0e242d;
-  height: 100vh;
-}
-
-#full {
-  height: 100vh;
-  background-color: #256347;
-}
