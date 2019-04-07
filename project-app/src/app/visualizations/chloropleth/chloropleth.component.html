@@ -1,24 +1,26 @@
-<div class="mapBlock">
-  <div style="padding: 2rem 2rem; text-align: center">
-    <h2 class="display-5">Répartition géographique</h2>
-    <div>
+<div class="map-block">
+  <div class="intro-to-dataviz">
+    <h2>Quelle est la répartition géographique des incidents par armes à feu aux États-Unis?</h2>
+    <p>
       Voici le nombre d'incidents cumulés par mois par État et par comtés au cours des années 2014, 2015, 2016 et 2017.
-      Le total de ces quatre années y est également présent. Comme on peut le voir, le nombre d'incidents par état et par 
+      Le total de ces quatre années y est également présent. Comme on peut le voir, le nombre d'incidents par État et par 
       compté reste relativement stable au fil des ans. Cela suggérerait que certaines régions des États-Unis sont généralement 
-      plus touchées par les incidents d'armes à feu que d'autres, sans que cela ne change trop au fil du temps. Les
+      plus touchées par les incidents par armes à feu que d'autres, sans que cela n'évolue de façon considérable au fil du temps. Les
       causes des incidents ne seraient donc pas liées à des événements temporels, mais plutôt au contexte plus large 
       des régions géographiques affectées. 
-    </div>
-    <h2>{{this.animationYear}}</h2>
+    </p>
+    <h3>
+      La répartition géographique des incidents par armes à feu aux États-Unis
+    </h3>
   </div>
-  <div lass="container">
+  <div>
     <div class="row">
       <div class="col-10">
         <div style="text-align: center; display: flex;" id="map">
           <div>
-            <div id="legende-max">{{this.maximum}}</div>
+            <div id="legend-max" style="width: 45px;">{{this.maximum}}</div>
             <div id="legend1"></div>
-            <div id="legende-min">0</div>
+            <div id="legend-min">0</div>
           </div>
         </div>
       </div>
@@ -36,39 +38,38 @@
             <label class="custom-control-label" for="customRadio2">Comtés</label>
           </div>
         </div>
-        <h6>Anné</h6>
+        <h6>Années</h6>
         <div class="form-group">
           <div class="custom-control custom-radio">
-            <input (click)="changeYear('2014', false)" type="radio" id="customRadio1_2" name="customRadio2"
-              class="custom-control-input" checked="">
+            <input (click)="changeYear('2014')" type="radio" id="customRadio1_2" name="customRadio2"
+              class="custom-control-input" [checked]="currentYear === '2014'">
             <label class="custom-control-label" for="customRadio1_2">2014</label>
           </div>
           <div class="custom-control custom-radio">
-            <input (click)="changeYear('2015', false)" type="radio" id="customRadio2_2" name="customRadio2"
-              class="custom-control-input">
+            <input (click)="changeYear('2015')" type="radio" id="customRadio2_2" name="customRadio2"
+              class="custom-control-input" [checked]="currentYear === '2015'">
             <label class="custom-control-label" for="customRadio2_2">2015</label>
           </div>
           <div class="custom-control custom-radio">
-            <input (click)="changeYear('2016', false)" type="radio" id="customRadio3_3" name="customRadio2"
-              class="custom-control-input">
+            <input (click)="changeYear('2016')" type="radio" id="customRadio3_3" name="customRadio2"
+              class="custom-control-input" [checked]="currentYear === '2016'">
             <label class="custom-control-label" for="customRadio3_3">2016</label>
           </div>
           <div class="custom-control custom-radio">
-            <input (click)="changeYear('2017', false)" type="radio" id="customRadio4_4" name="customRadio2"
-              class="custom-control-input">
+            <input (click)="changeYear('2017')" type="radio" id="customRadio4_4" name="customRadio2"
+              class="custom-control-input" [checked]="currentYear === '2017'">
             <label class="custom-control-label" for="customRadio4_4">2017</label>
           </div>
           <div class="custom-control custom-radio">
-            <input (click)="changeYear('total', false)" type="radio" id="customRadio5_5" name="customRadio2"
-              class="custom-control-input">
-            <label class="custom-control-label" for="customRadio5_5">Total</label>
+            <input (click)="changeYear('total')" type="radio" id="customRadio5_5" name="customRadio2"
+              class="custom-control-input" [checked]="currentYear === 'total'">
+            <label class="custom-control-label" for="customRadio5_5">Total 2014-2017</label>
           </div>
           <br>
-          <h6>Changement durant les années</h6>
-          <button class="btn btn-primary" (click)="animate()" style="margin-top: 5px">Demarrer l'animation</button>
+          <h6>Évolution au fil des années</h6>
+          <button class="btn btn-primary" (click)="animate()" style="margin-top: 5px">Démarrer l'animation</button>
         </div>
       </div>
     </div>
   </div>
-  <div id="tooltipMap"></div>
 </div>

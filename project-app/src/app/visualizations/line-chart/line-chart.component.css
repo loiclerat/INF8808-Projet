@@ -1,5 +1,7 @@
-*{
+.intro-to-dataviz {
+  padding: 2rem 2rem;
   text-align: center;
+  height: 100vh;
 }
 
 h3 {

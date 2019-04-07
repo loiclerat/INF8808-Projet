@@ -1,17 +1,13 @@
-
-.state-borders {
-  fill: none;
-  stroke: #fff;
-  stroke-width: 5px;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-  pointer-events: none;
+.map-block {
+  height: 122vh;
 }
 
-.hidden {
-  display: none;
+.intro-to-dataviz {
+  padding: 2rem 2rem;
+  text-align: center;
 }
 
-.mapBlock {
-  height: 100vh;
+h3 {
+  margin-top: 50px;
+  margin-bottom: -20px;
 }

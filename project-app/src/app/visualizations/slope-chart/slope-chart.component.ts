@@ -389,7 +389,7 @@ export class SlopeChartComponent implements OnInit {
       .attr("x", SlopeChartComponent.width / 2)
       .attr("y", yScale(y1Max))
       .attr("text-anchor", "middle")
-      .text(this.formatRatio(y1Max) + " incidents /1000 hab.");
+      .text(this.formatRatio(y1Max) + " incidents par 1000 habitants");
 
     // Draw legend down
     svg.append("g")
@@ -398,7 +398,7 @@ export class SlopeChartComponent implements OnInit {
       .attr("x", SlopeChartComponent.width / 2)
       .attr("y", yScale(y1Min) + 20)
       .attr("text-anchor", "middle")
-      .text(this.formatRatio(y1Min) + " incidents /1000 hab.");
+      .text(this.formatRatio(y1Min) + " incidents par 1000 habitants");
   }
 
   private formatRatio(ratio: number): string {

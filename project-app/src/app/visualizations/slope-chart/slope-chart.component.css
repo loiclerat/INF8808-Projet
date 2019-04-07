@@ -1,5 +1,7 @@
-p {
-  margin: 0px 60px;
+.intro-to-dataviz {
+  padding: 2rem 2rem;
+  text-align: center;
+  height: 100vh;
 }
 
 h3 {
@@ -27,8 +29,4 @@ h3 {
 
 .hidden {
   display: none;
-}
-
-div {
-  text-align: center;
 }

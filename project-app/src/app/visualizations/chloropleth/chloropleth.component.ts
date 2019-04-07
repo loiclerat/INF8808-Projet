@@ -36,9 +36,8 @@ export class ChloroplethComponent implements OnInit {
   private tooltip: any;
 
   private DEFAULT_YEAR = "2014";
-  private years = ["2014", "2015", "2016", "2017"]
+  private years = ["2014", "2015", "2016", "2017"];
   private currentYear: string;
-  private animationYear: string;
   private isAnimationRunning = false;
 
   async ngOnInit() {
@@ -51,14 +50,13 @@ export class ChloroplethComponent implements OnInit {
     this.tooltip.html((data: DataMap, type: MapType) => {
       const typeText = type === MapType.State ? "État" : "Comté";
       return `<div>${typeText} : <b> ${data.name} </b> <br>
-                Incidents : <b> ${Math.round(data.total)} </b></div>`; // TODO à valider que c'est vrm cela
+                Incidents : <b> ${Math.round(data.total)} </b></div>`;
     });
     // load neccessary data
     this.statesIdNames = await d3.json("./../../../../extract/id-formatting/states-id.json");
     this.dataStatesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_States.json");
     this.countiesIdNames = await d3.json("./../../../../extract/id-formatting/counties-id.json");
     this.dataCountiesIncidents = await d3.json("./../../../../extract/domain-color-max/domain_Counties.json");
-
 
     this.currentYear = this.DEFAULT_YEAR;
     // counties
@@ -118,9 +116,9 @@ export class ChloroplethComponent implements OnInit {
       .attr("height", this.height);
   }
 
-  public changeYear(year: string, isAnimation: boolean) {
-    if (!isAnimation)
-      this.currentYear = year;
+  public changeYear(year: string) {
+    this.currentYear = year;
+
     if (this.type === MapType.State) {
       this.updateJsonMapForStates(year);
       this.buildMap(this.tooltip, this.type);
@@ -166,14 +164,13 @@ export class ChloroplethComponent implements OnInit {
 
   async animate() {
     if (!this.isAnimationRunning) {
+      const yearSelectedBeforeAnimation = this.currentYear;
       this.isAnimationRunning = true;
       for (let i = 0; i < this.years.length; i++) {
-        this.animationYear = this.years[i];
+        this.changeYear(this.years[i]);
         await this.delay(700);
-        this.changeYear(this.animationYear, true);
       }
-      this.animationYear = "";
-      this.changeYear(this.currentYear, false);
+      this.changeYear(yearSelectedBeforeAnimation);
       this.isAnimationRunning = false;
     }
   }
@@ -188,7 +185,7 @@ export class ChloroplethComponent implements OnInit {
       .attr("width", 25)
       .attr("height", 500);
 
-    var legend = key.append("defs")
+    const legend = key.append("defs")
       .append("svg:linearGradient")
       .attr("id", "gradient")
       .attr("x1", "100%")

@@ -77,7 +77,7 @@ export class LineChartComponent implements OnInit {
       bottom: 100,
       left: 60
     };
-    const width = 1000 - margin.left - margin.right;
+    const width = 1200 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
 
     const xScale = d3.scaleLinear().range([0, width]);
