@@ -35,6 +35,8 @@ export class SlopeChartComponent implements OnInit {
   };
 
   private static readonly nbCitiesToDisplay = 20;
+  private static labelHoverPosX: number;
+  private static labelHoverPosY: number;
 
   public loaded = false;
   private data: Incident[];
@@ -42,8 +44,6 @@ export class SlopeChartComponent implements OnInit {
   private dataByCityManyIncidents: DataByCity[];
   private cityGroupsLeft: number[][];
   private cityGroupsRight: number[][];
-  private static labelHoverPosX: number;
-  private static labelHoverPosY: number;
 
   ngOnInit() {
     const parseTime = d3.timeParse("%Y-%m-%d");
@@ -200,8 +200,8 @@ export class SlopeChartComponent implements OnInit {
           .attr("stroke", "black")
           .raise();
 
-        const posX = SlopeChartComponent.labelHoverPosX == 0 ? d3.event.pageX : SlopeChartComponent.labelHoverPosX;
-        const posY = SlopeChartComponent.labelHoverPosY == 0 ? d3.event.pageY : SlopeChartComponent.labelHoverPosY;
+        const posX = SlopeChartComponent.labelHoverPosX === 0 ? d3.event.pageX : SlopeChartComponent.labelHoverPosX;
+        const posY = SlopeChartComponent.labelHoverPosY === 0 ? d3.event.pageY : SlopeChartComponent.labelHoverPosY;
 
         tip.show(d, this)
           .style("left", (posX - 120) + "px")
