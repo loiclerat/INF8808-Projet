@@ -42,6 +42,8 @@ export class SlopeChartComponent implements OnInit {
   private dataByCityManyIncidents: DataByCity[];
   private cityGroupsLeft: number[][];
   private cityGroupsRight: number[][];
+  private static labelHoverPosX: number;
+  private static labelHoverPosY: number;
 
   ngOnInit() {
     const parseTime = d3.timeParse("%Y-%m-%d");
@@ -140,6 +142,9 @@ export class SlopeChartComponent implements OnInit {
   }
 
   private createSlopeChart(data: DataByCity[], svgId: string) {
+    SlopeChartComponent.labelHoverPosX = 0;
+    SlopeChartComponent.labelHoverPosY = 0;
+
     // Create main svg
     const svg = d3.select("#" + svgId)
       .attr("width", SlopeChartComponent.width + SlopeChartComponent.margin.left + SlopeChartComponent.margin.right)
@@ -195,9 +200,12 @@ export class SlopeChartComponent implements OnInit {
           .attr("stroke", "black")
           .raise();
 
+        const posX = SlopeChartComponent.labelHoverPosX == 0 ? d3.event.pageX : SlopeChartComponent.labelHoverPosX;
+        const posY = SlopeChartComponent.labelHoverPosY == 0 ? d3.event.pageY : SlopeChartComponent.labelHoverPosY;
+
         tip.show(d, this)
-          .style("left", (d3.event.pageX - 120) + "px")
-          .style("top", (d3.event.pageY - 150) + "px");
+          .style("left", (posX - 120) + "px")
+          .style("top", (posY - 150) + "px");
       })
       .on("mouseout", function (d) {
         d3.select(this).selectAll("line").attr("stroke", SlopeChartComponent.config.slopeLineUnfocusColor);
@@ -206,6 +214,9 @@ export class SlopeChartComponent implements OnInit {
           .attr("stroke", SlopeChartComponent.config.circleUnfocusColor);
 
         tip.hide(d);
+
+        SlopeChartComponent.labelHoverPosX = 0;
+        SlopeChartComponent.labelHoverPosY = 0;
       });
 
     slopeGroups.call(tip);
@@ -323,6 +334,8 @@ export class SlopeChartComponent implements OnInit {
         const evtOver = document.createEvent("Events");
         evtOver.initEvent("mouseover", true, false);
 
+        SlopeChartComponent.labelHoverPosX = d3.event.pageX;
+        SlopeChartComponent.labelHoverPosY = d3.event.pageY - 10;
         domElement.dispatchEvent(evtOver);
       })
       .on("mouseout", function () {
