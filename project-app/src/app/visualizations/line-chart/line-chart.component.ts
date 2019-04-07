@@ -11,6 +11,7 @@ import { DataByState } from "../../data-by-state.model";
 })
 export class LineChartComponent implements OnInit {
   private dataByState: DataByState[];
+  private color: any;
   private readonly NUMBER_OF_MONTHS = 48;
   private readonly constantStates = [
     "Montana",
@@ -102,13 +103,14 @@ export class LineChartComponent implements OnInit {
 
     const line = this.createLine(xScale, yScale);
 
-    const color: any = d3.scaleOrdinal().range(this.colorGenerator(50));
-    this.domainColor(color);
+    this.color = d3.scaleOrdinal().range(this.colorGenerator(50));
+    this.domainColor();
+    this.addColorToSpan();
 
     this.domainX(xScale);
     this.domainY(yScale);
 
-    this.createLineChart(g, line, color, this.updateTooltip, this.mouseout, yScale);
+    this.createLineChart(g, line, this.updateTooltip, this.mouseout, yScale);
 
     g.append("g")
       .attr("class", "x axis")
@@ -135,6 +137,18 @@ export class LineChartComponent implements OnInit {
       .text("Nombre d'incidents");
   }
 
+  private addColorToSpan() {
+    const self = this;
+    d3.selectAll("span")
+      .style("background-color", function () {
+        if (d3.select(this).attr("id") === "constants") {
+          return "darkgray";
+        } else {
+          return self.color(d3.select(this).attr("id"));
+        }
+      });
+  }
+
   private createLine(x: d3.ScaleLinear<number, number>, y: d3.ScaleLinear<number, number>) {
     return d3.line()
       .x((d: any, i: number) => x(i))
@@ -142,8 +156,8 @@ export class LineChartComponent implements OnInit {
       .curve(d3.curveCardinal);
   }
 
-  private domainColor(color: d3.ScaleOrdinal<string, string>) {
-    color.domain(this.dataByState.map(state => state.state));
+  private domainColor() {
+    this.color.domain(this.dataByState.map(state => state.state));
   }
 
   private domainX(xScale: d3.ScaleLinear<number, number>) {
@@ -157,7 +171,6 @@ export class LineChartComponent implements OnInit {
   private createLineChart(
     g: d3.Selection<SVGGElement, {}, HTMLElement, any>,
     line: any,
-    color: d3.ScaleOrdinal<string, string>,
     updateTooltip: Function,
     mouseout: Function,
     yScale: d3.ScaleLinear<number, number>
@@ -167,7 +180,7 @@ export class LineChartComponent implements OnInit {
       .enter()
       .append("path")
       .attr("fill", "none")
-      .attr("stroke", d => color(d.state))
+      .attr("stroke", d => this.color(d.state))
       .attr("d", d => line(d.incidents_by_month))
       .attr("clip-path", "url(#clip)")
       .attr("class", d => d.state + " line")
@@ -207,7 +220,7 @@ export class LineChartComponent implements OnInit {
   }
 
   private colorGenerator(length: number): d3.HSLColorFactory[] {
-    const base = 5;
+    const base = 7;
     const lightnessMin = 0.4;
     const lightnessMax = 0.8;
     const lightnessDecay = 100;

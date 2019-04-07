@@ -5,19 +5,19 @@
   <p>
     Voici le nombre d'incidents cumulés par mois par État entre le 1er janvier 2014 et le 31 décembre 2017.
     Comme on peut le voir, les États où il y a beaucoup d'incidents et de fluctuation à travers le temps sont la
-    <span class="badge badge-pill badge-warning" (mouseenter)="showState('California')"
+    <span id="California" class="badge badge-pill" (mouseenter)="showState('California')"
       (mouseleave)="hideState()">Californie</span>, la
-    <span class="badge badge-pill badge-success" (mouseenter)="showState('Georgia')"
+    <span id="Georgia" class="badge badge-pill" (mouseenter)="showState('Georgia')"
       (mouseleave)="hideState()">Géorgie</span>, le
-    <span class="badge badge-pill badge-danger" (mouseenter)="showState('Texas')"
+    <span id="Texas" class="badge badge-pill" (mouseenter)="showState('Texas')"
       (mouseleave)="hideState()">Texas</span>,
-    l'<span class="badge badge-pill badge-primary" (mouseenter)="showState('Illinois')"
+    l'<span id="Illinois" class="badge badge-pill" (mouseenter)="showState('Illinois')"
       (mouseleave)="hideState()">Illinois</span> et la
-    <span class="badge badge-pill badge-info" (mouseenter)="showState('Florida')"
+    <span id="Florida" class="badge badge-pill" (mouseenter)="showState('Florida')"
       (mouseleave)="hideState()">Floride</span>. En général, les états où il y a le plus d'incidents sont aussi ceux
       qui ont le plus de fluctuation à travers le temps, reflètant l'instabilité des états où il y a plus
       d'activités liées aux armes à feux. Cependant, pour
-    <span class="badge badge-pill badge-dark" (mouseenter)="showConstantState()" (mouseleave)="hideState()">la
+    <span id="constants" class="badge badge-pill" (mouseenter)="showConstantState()" (mouseleave)="hideState()">la
       plupart des États</span>, tout comme on le voyait sur la carte précédente. 
   </p>
   <h3>
